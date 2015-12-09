@@ -45,7 +45,7 @@ namespace Nest
 
 	public class SimpleQueryStringQuery : QueryBase, ISimpleQueryStringQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public Fields Fields { get; set; }
 		public string Query { get; set; }
 		public string Analyzer { get; set; }
@@ -57,16 +57,15 @@ namespace Nest
 		public bool? AnalyzeWildcard { get; set; }
 		public MinimumShouldMatch MinimumShouldMatch { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.SimpleQueryString = this;
-		internal static bool IsConditionless(ISimpleQueryStringQuery q) => 
-			q.Fields == null || q.Query.IsNullOrEmpty();
+		protected override void WrapInContainer(IQueryContainer c) => c.SimpleQueryString = this;
+		internal static bool IsConditionless(ISimpleQueryStringQuery q) => q.Query.IsNullOrEmpty();
 	}
 
 	public class SimpleQueryStringQueryDescriptor<T> 
 		: QueryDescriptorBase<SimpleQueryStringQueryDescriptor<T>, ISimpleQueryStringQuery> 
 		, ISimpleQueryStringQuery where T : class
 	{
-		protected override bool Conditionless => SimpleQueryStringQuery.IsConditionless(this);
+		bool IQuery.Conditionless => SimpleQueryStringQuery.IsConditionless(this);
 		Fields ISimpleQueryStringQuery.Fields { get; set; }
 		string ISimpleQueryStringQuery.Query { get; set; }
 		string ISimpleQueryStringQuery.Analyzer { get; set; }

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	[ContractJsonConverter(typeof(AggregationJsonConverter<CardinalityAggregation>))]
+	[JsonConverter(typeof(ReadAsTypeJsonConverter<CardinalityAggregation>))]
 	public interface ICardinalityAggregation : IMetricAggregation
 	{
 		[JsonProperty("precision_threshold")]

@@ -46,11 +46,5 @@ namespace Tests.QueryDsl.Joining.SpanFirst
 				)
 				.End(3)
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<ISpanFirstQuery>(a => a.SpanFirst)
-		{
-			q => q.Match = null,
-			q => q.Match = new SpanQuery { SpanTerm = new SpanTermQuery() } ,
-		};
 	}
 }

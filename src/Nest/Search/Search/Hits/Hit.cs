@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Nest
 {
-	[ContractJsonConverter(typeof(DefaultHitJsonConverter))]
+	//[JsonConverter(typeof(ConcreteTypeConverter))]
 	public interface IHit<out T> where T : class
 	{
 		IFieldSelection<T> Fields { get; }

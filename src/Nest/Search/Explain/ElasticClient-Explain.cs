@@ -7,24 +7,20 @@ namespace Nest
 {
 	public partial interface IElasticClient
 	{
-		/// <summary>
-		/// The explain api computes a score explanation for a query and a specific document. 
-		/// This can give useful feedback whether a document matches or didn’t match a specific query.
-		/// <para> </para><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-explain.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/search-explain.html</a>
-		/// </summary>
-		IExplainResponse<T> Explain<T>(DocumentPath<T> document, Func<ExplainDescriptor<T>, IExplainRequest<T>> selector)
+		/// <inheritdoc/>
+		IExplainResponse<T> Explain<T>(DocumentPath<T> document, Func<ExplainDescriptor<T>, IExplainRequest<T>> querySelector)
 			where T : class;
 
 		/// <inheritdoc/>
-		IExplainResponse<T> Explain<T>(IExplainRequest<T> request)
+		IExplainResponse<T> Explain<T>(IExplainRequest<T> explainRequest)
 			where T : class;
 
 		/// <inheritdoc/>
-		Task<IExplainResponse<T>> ExplainAsync<T>(DocumentPath<T> document,Func<ExplainDescriptor<T>, IExplainRequest<T>> selector)
+		Task<IExplainResponse<T>> ExplainAsync<T>(DocumentPath<T> document,Func<ExplainDescriptor<T>, IExplainRequest<T>> querySelector)
 			where T : class;
 
 		/// <inheritdoc/>
-		Task<IExplainResponse<T>> ExplainAsync<T>(IExplainRequest<T> request)
+		Task<IExplainResponse<T>> ExplainAsync<T>(IExplainRequest<T> explainRequest)
 			where T : class;
 
 	}
@@ -32,28 +28,28 @@ namespace Nest
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IExplainResponse<T> Explain<T>(DocumentPath<T> document, Func<ExplainDescriptor<T>, IExplainRequest<T>> selector)
+		public IExplainResponse<T> Explain<T>(DocumentPath<T> document, Func<ExplainDescriptor<T>, IExplainRequest<T>> querySelector)
 			where T : class =>
-			this.Explain<T>(selector?.Invoke(new ExplainDescriptor<T>(document.Self.Index, document.Self.Type, document.Self.Id)));
+			this.Explain<T>(querySelector?.Invoke(new ExplainDescriptor<T>(document.Self.Index, document.Self.Type, document.Self.Id)));
 
 		/// <inheritdoc/>
-		public IExplainResponse<T> Explain<T>(IExplainRequest<T> request)
+		public IExplainResponse<T> Explain<T>(IExplainRequest<T> explainRequest)
 			where T : class => 
 			this.Dispatcher.Dispatch<IExplainRequest<T>, ExplainRequestParameters, ExplainResponse<T>>(
-				request,
+				explainRequest,
 				this.LowLevelDispatch.ExplainDispatch<ExplainResponse<T>>
 			);
 
 		/// <inheritdoc/>
-		public Task<IExplainResponse<T>> ExplainAsync<T>(DocumentPath<T> document, Func<ExplainDescriptor<T>, IExplainRequest<T>> selector)
+		public Task<IExplainResponse<T>> ExplainAsync<T>(DocumentPath<T> document, Func<ExplainDescriptor<T>, IExplainRequest<T>> querySelector)
 			where T : class => 
-			this.ExplainAsync<T>(selector?.Invoke(new ExplainDescriptor<T>(document.Self.Index, document.Self.Type, document.Self.Id)));
+			this.ExplainAsync<T>(querySelector?.Invoke(new ExplainDescriptor<T>(document.Self.Index, document.Self.Type, document.Self.Id)));
 
 		/// <inheritdoc/>
-		public Task<IExplainResponse<T>> ExplainAsync<T>(IExplainRequest<T> request)
+		public Task<IExplainResponse<T>> ExplainAsync<T>(IExplainRequest<T> explainRequest)
 			where T : class => 
 			this.Dispatcher.DispatchAsync<IExplainRequest<T>, ExplainRequestParameters, ExplainResponse<T>, IExplainResponse<T>>(
-				request,
+				explainRequest,
 				this.LowLevelDispatch.ExplainDispatchAsync<ExplainResponse<T>>
 			);
 	}

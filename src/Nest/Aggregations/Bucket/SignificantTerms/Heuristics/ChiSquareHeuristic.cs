@@ -5,7 +5,7 @@ namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
 	[JsonConverter(typeof(ReadAsTypeJsonConverter<ChiSquareHeuristic>))]
-	public interface IChiSquareHeuristic 
+	public interface IChiSquareHeuristic : INestSerializable
 	{
 		[JsonProperty("include_negatives")]
 		bool? IncludeNegatives { get; set; }

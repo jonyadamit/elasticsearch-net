@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	[ContractJsonConverter(typeof(AggregationJsonConverter<SumBucketAggregation>))]
+	[JsonConverter(typeof(ReadAsTypeJsonConverter<SumBucketAggregation>))]
 	public interface ISumBucketAggregation : IPipelineAggregation { }
 
 	public class SumBucketAggregation

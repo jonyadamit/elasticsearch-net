@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.IO;
@@ -39,7 +38,7 @@ namespace Nest
 				return null;
 			double p;
 			var sp = matches[0].Groups[1].Captures[0].Value;
-			if (!double.TryParse(sp, NumberStyles.Any, CultureInfo.InvariantCulture, out p)) return null;
+			if (!double.TryParse(sp, out p)) return null;
 			var unit = matches[0].Groups[2].Captures[0].Value.ToEnum<GeoPrecision>();
 			if (!unit.HasValue) return null;
 			return new GeoDistance(p, unit.Value);

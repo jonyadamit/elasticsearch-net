@@ -17,13 +17,13 @@ namespace Nest
 		ISuggestResponse Suggest<T>(Func<SuggestDescriptor<T>, ISuggestRequest> selector) where T : class;
 
 		/// <inheritdoc/>
-		ISuggestResponse Suggest(ISuggestRequest request);
+		ISuggestResponse Suggest(ISuggestRequest suggestRequest);
 
 		/// <inheritdoc/>
 		Task<ISuggestResponse> SuggestAsync<T>(Func<SuggestDescriptor<T>, ISuggestRequest> selector) where T : class;
 
 		/// <inheritdoc/>
-		Task<ISuggestResponse> SuggestAsync(ISuggestRequest request);
+		Task<ISuggestResponse> SuggestAsync(ISuggestRequest suggestRequest);
 	}
 
 	//TODO limit scope of fluent to IndexName of T
@@ -35,9 +35,9 @@ namespace Nest
 			this.Suggest(selector?.Invoke(new SuggestDescriptor<T>()));
 
 		/// <inheritdoc/>
-		public ISuggestResponse Suggest(ISuggestRequest request) => 
+		public ISuggestResponse Suggest(ISuggestRequest suggestRequest) => 
 			this.Dispatcher.Dispatch<ISuggestRequest, SuggestRequestParameters, SuggestResponse>(
-				request,
+				suggestRequest,
 				this.LowLevelDispatch.SuggestDispatch<SuggestResponse>
 			);
 
@@ -46,9 +46,9 @@ namespace Nest
 			this.SuggestAsync(selector?.Invoke(new SuggestDescriptor<T>()));
 
 		/// <inheritdoc/>
-		public Task<ISuggestResponse> SuggestAsync(ISuggestRequest request) => 
+		public Task<ISuggestResponse> SuggestAsync(ISuggestRequest suggestRequest) => 
 			this.Dispatcher.DispatchAsync<ISuggestRequest, SuggestRequestParameters, SuggestResponse, ISuggestResponse>(
-				request,
+				suggestRequest,
 				this.LowLevelDispatch.SuggestDispatchAsync<SuggestResponse>
 			);
 	}

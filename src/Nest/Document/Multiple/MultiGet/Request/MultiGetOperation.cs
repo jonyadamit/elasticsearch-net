@@ -16,6 +16,7 @@ namespace Nest
 			this.Type = typeof(T);
 		}
 
+
 		Type IMultiGetOperation.ClrType => typeof(T);
 
 		public IndexName Index { get; set; }
@@ -24,7 +25,7 @@ namespace Nest
 
 		public Id Id { get; set; }
 
-		public Fields Fields { get; set; }
+		public IList<Field> Fields { get; set; }
 
 		public Union<bool, ISourceFilter> Source { get; set; }
 
@@ -41,15 +42,17 @@ namespace Nest
 		public object Document { get; set; }
 	}
 
-	public class MultiGetOperationDescriptor<T> : DescriptorBase<MultiGetOperationDescriptor<T>, IMultiGetOperation>, IMultiGetOperation
+	public class MultiGetOperationDescriptor<T> : IMultiGetOperation
 		where T : class
 	{
+		private IMultiGetOperation Self => this;
+
 		IndexName IMultiGetOperation.Index { get; set; }
 		TypeName IMultiGetOperation.Type { get; set; }
 		Id IMultiGetOperation.Id { get; set; }
 		string IMultiGetOperation.Routing { get; set; }
 		Union<bool, ISourceFilter> IMultiGetOperation.Source { get; set; }
-		Fields IMultiGetOperation.Fields { get; set; }
+		IList<Field> IMultiGetOperation.Fields { get; set; }
 		Type IMultiGetOperation.ClrType => typeof(T);
 
 		bool IMultiGetOperation.CanBeFlattened =>
@@ -83,38 +86,87 @@ namespace Nest
 		/// <summary>
 		/// Manually set the index, default to the default index or the index set for the type on the connectionsettings.
 		/// </summary>
-		public MultiGetOperationDescriptor<T> Index(IndexName index) => Assign(a => a.Index = index);
-
+		public MultiGetOperationDescriptor<T> Index(string index)
+		{
+			if (index.IsNullOrEmpty()) return this;
+			Self.Index = index;
+			return this;
+		}
 		/// <summary>
 		/// Manualy set the type to get the object from, default to whatever
 		/// T will be inferred to if not passed.
 		/// </summary>
-		public MultiGetOperationDescriptor<T> Type(TypeName type) => Assign(a=> a.Type = type);
+		public MultiGetOperationDescriptor<T> Type(string type)
+		{
+			if (type.IsNullOrEmpty()) return this;
+			Self.Type = type;
+			return this;
+		}
 
-		public MultiGetOperationDescriptor<T> Id(Id id) => Assign(a => a.Id = id);
+
+		/// <summary>
+		/// Manually set the type of which a typename will be inferred
+		/// </summary>
+		public MultiGetOperationDescriptor<T> Type(Type type)
+		{
+			if (type == null) return this;
+			Self.Type = type;
+			return this;
+		}
+
+		public MultiGetOperationDescriptor<T> Id(Id id)
+		{
+			Self.Id = id;
+			return this;
+		}
 
 		/// <summary>
 		/// Control how the document's source is loaded
 		/// </summary>
-		public MultiGetOperationDescriptor<T> Source(bool? sourceEnabled = true) => Assign(a => a.Source = sourceEnabled);
+		public MultiGetOperationDescriptor<T> Source(bool? sourceEnabled = true)
+		{
+			Self.Source = sourceEnabled;
+			return this;
+		}
 
 		/// <summary>
 		/// Control how the document's source is loaded
 		/// </summary>
-		public MultiGetOperationDescriptor<T> Source(Func<SourceFilterDescriptor<T>, ISourceFilter> source) =>
-			Assign(a => a.Source = new Union<bool, ISourceFilter>(source(new SourceFilterDescriptor<T>())));
+		public MultiGetOperationDescriptor<T> Source(Func<SourceFilterDescriptor<T>, ISourceFilter> source)
+		{
+			Self.Source = new Union<bool, ISourceFilter>(source(new SourceFilterDescriptor<T>()));
+			return this;
+		}
 
 		/// <summary>
 		/// Set the routing for the get operation
 		/// </summary>
-		public MultiGetOperationDescriptor<T> Routing(string routing) => Assign(a => a.Routing = routing);
+		public MultiGetOperationDescriptor<T> Routing(string routing)
+		{
+			routing.ThrowIfNullOrEmpty("routing");
+			Self.Routing = routing;
+			return this;
+		}
 
 		/// <summary>
 		/// Allows to selectively load specific fields for each document 
 		/// represented by a search hit. Defaults to load the internal _source field.
 		/// </summary>
-		public MultiGetOperationDescriptor<T> Fields(Func<FieldsDescriptor<T>, IPromise<Fields>> fields) =>
-			Assign(a => a.Fields = fields?.Invoke(new FieldsDescriptor<T>())?.Value);
+		public MultiGetOperationDescriptor<T> Fields(params Expression<Func<T, object>>[] expressions)
+		{
+			Self.Fields = expressions.Select(e => (Field)e).ToList();
+			return this;
+		}
+
+		/// <summary>
+		/// Allows to selectively load specific fields for each document 
+		/// represented by a search hit. Defaults to load the internal _source field.
+		/// </summary>
+		public MultiGetOperationDescriptor<T> Fields(params string[] fields)
+		{
+			Self.Fields = fields.Select(f => (Field)f).ToList();
+			return this;
+		}
 
 	}
 }

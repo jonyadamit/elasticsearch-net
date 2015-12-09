@@ -4,7 +4,7 @@ namespace Nest
 {
 	[JsonObject]
 	[JsonConverter(typeof(ReadAsTypeJsonConverter<GoogleNormalizedDistanceHeuristic>))]
-	public interface IGoogleNormalizedDistanceHeuristic 
+	public interface IGoogleNormalizedDistanceHeuristic : INestSerializable
 	{
 		[JsonProperty("background_is_superset")]
 		bool? BackgroundIsSuperSet { get; set; }

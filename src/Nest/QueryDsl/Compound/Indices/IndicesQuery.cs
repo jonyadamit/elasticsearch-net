@@ -12,8 +12,7 @@ namespace Nest
 	public interface IIndicesQuery : IQuery
 	{
 		[JsonProperty("indices")]
-		[JsonConverter(typeof(IndicesJsonConverter))]
-		Indices Indices { get; set; }
+		IEnumerable<IndexName> Indices { get; set; }
 
 		[JsonProperty("query")]
 		QueryContainer Query { get; set; }
@@ -34,47 +33,59 @@ namespace Nest
 			if (f.RawQuery.IsNullOrEmpty()) return f;
 			return new RawJson(f.RawQuery);
 		}
-		public static implicit operator NoMatchQueryContainer(NoMatchShortcut shortcut) => new NoMatchQueryContainer { Shortcut = shortcut };
 	}
 
 	public class IndicesQuery : QueryBase, IIndicesQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public QueryContainer Query { get; set; }
 		public QueryContainer NoMatchQuery { get; set; }
-		public Indices Indices { get; set; }
+		public IEnumerable<IndexName> Indices { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.Indices = this;
-		internal static bool IsConditionless(IIndicesQuery q) => 
-			q.Indices == null || (q.NoMatchQuery.IsConditionless() && q.Query.IsConditionless());
+		protected override void WrapInContainer(IQueryContainer c) => c.Indices = this;
+		internal static bool IsConditionless(IIndicesQuery q) => q.NoMatchQuery == null && q.Query == null;
 	}
 
 	public class IndicesQueryDescriptor<T> 
 		: QueryDescriptorBase<IndicesQueryDescriptor<T>, IIndicesQuery> 
 		, IIndicesQuery where T : class
 	{
-		protected override bool Conditionless => IndicesQuery.IsConditionless(this);
+		bool IQuery.Conditionless => IndicesQuery.IsConditionless(this);
 		QueryContainer IIndicesQuery.Query { get; set; }
 		QueryContainer IIndicesQuery.NoMatchQuery { get; set; }
-		Indices IIndicesQuery.Indices { get; set; }
+		IEnumerable<IndexName> IIndicesQuery.Indices { get; set; }
 
-		public IndicesQueryDescriptor<T> Query(Func<QueryContainerDescriptor<T>, QueryContainer> selector) => 
-			Assign(a => a.Query = selector?.InvokeQuery(new QueryContainerDescriptor<T>()));
+		public IndicesQueryDescriptor<T> Query(Func<QueryContainerDescriptor<T>, QueryContainer> selector) => Assign(a =>
+		{
+			var query = selector(new QueryContainerDescriptor<T>());
+			if (query.IsConditionless)
+				a.Query = query;
+		});
 
-		public IndicesQueryDescriptor<T> Query<TOther>(Func<QueryContainerDescriptor<TOther>, QueryContainer> selector) where TOther : class => 
-			Assign(a => a.Query = selector?.InvokeQuery(new QueryContainerDescriptor<TOther>()));
+		public IndicesQueryDescriptor<T> Query<K>(Func<QueryContainerDescriptor<K>, QueryContainer> selector) where K : class => Assign(a =>
+		{
+			var query = selector(new QueryContainerDescriptor<K>());
+			if (query.IsConditionless)
+				a.Query = query;
+		});
 
 		public IndicesQueryDescriptor<T> NoMatchQuery(NoMatchShortcut shortcut) =>
 			Assign(a => a.NoMatchQuery = new NoMatchQueryContainer { Shortcut = shortcut });
 
-		public IndicesQueryDescriptor<T> NoMatchQuery(Func<QueryContainerDescriptor<T>, QueryContainer> selector) =>
-			Assign(a => a.NoMatchQuery = selector?.InvokeQuery(new QueryContainerDescriptor<T>()));
+		public IndicesQueryDescriptor<T> NoMatchQuery(Func<QueryContainerDescriptor<T>, QueryContainer> selector) => Assign(a =>
+		{
+			var query = selector(new QueryContainerDescriptor<T>());
+			if (query.IsConditionless)
+				a.NoMatchQuery = query;
+		});
 
-		public IndicesQueryDescriptor<T> NoMatchQuery<TOther>(Func<QueryContainerDescriptor<TOther>, QueryContainer> selector) where TOther : class => 
-			Assign(a => a.NoMatchQuery = selector?.InvokeQuery(new QueryContainerDescriptor<TOther>()));
+		public IndicesQueryDescriptor<T> NoMatchQuery<K>(Func<QueryContainerDescriptor<K>, QueryContainer> selector) where K : class => Assign(a =>
+		{
+			var query = selector(new QueryContainerDescriptor<K>());
+			if (query.IsConditionless)
+				a.NoMatchQuery = query;
+		});
 
-		public IndicesQueryDescriptor<T> Indices(Indices indices) => Assign(a => a.Indices = indices);
-		public IndicesQueryDescriptor<T> Indices(params IndexName[] indices) => Assign(a => a.Indices = indices);
-		public IndicesQueryDescriptor<T> Indices(IEnumerable<IndexName> indices) => Assign(a => a.Indices = indices.ToArray());
+		public IndicesQueryDescriptor<T> Indices(IEnumerable<IndexName> indices) => Assign(a => a.Indices = indices);
 	}
 }

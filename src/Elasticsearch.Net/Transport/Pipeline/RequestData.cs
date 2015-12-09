@@ -8,9 +8,8 @@ using System.Collections.Specialized;
 using Elasticsearch.Net.Connection.Security;
 using System.Threading;
 using System.IO.Compression;
-using Elasticsearch.Net.Extensions;
 using Elasticsearch.Net.Serialization;
-using Purify;
+using PurifyNet;
 
 namespace Elasticsearch.Net.Connection
 {

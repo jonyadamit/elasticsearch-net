@@ -3,20 +3,15 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Elasticsearch.Net.Connection;
-using Elasticsearch.Net.Extensions;
 
 namespace Elasticsearch.Net
 {
-	internal static class ResponseStatics
-	{
-		public static readonly string PrintFormat = "StatusCode: {1}, {0}\tMethod: {2}, {0}\tUrl: {3}, {0}\tRequest: {4}, {0}\tResponse: {5}";
-		public static readonly string ErrorFormat = "{0}\tExceptionMessage: {1}{0}\t StackTrace: {2}";
-		public static readonly string AlreadyCaptured = "<Response stream not captured or already read to completion by serializer, set ExposeRawResponse() on connectionsettings to force it to be set on>";
-
-	}
 	public class ElasticsearchResponse<T> : IApiCallDetails
 	{
-		public bool Success { get; }
+		private static readonly string _printFormat = "StatusCode: {1}, {0}\tMethod: {2}, {0}\tUrl: {3}, {0}\tRequest: {4}, {0}\tResponse: {5}";
+		private static readonly string _errorFormat = "{0}\tExceptionMessage: {1}{0}\t StackTrace: {2}";
+
+		public bool Success { get; internal set; } = true;
 
 		public HttpMethod HttpMethod { get; internal set; }
 
@@ -30,7 +25,7 @@ namespace Elasticsearch.Net
 
 		public T Body { get; protected internal set; }
 
-		public int? HttpStatusCode { get; }
+		public int? HttpStatusCode { get; internal set; }
 
 		public List<Audit> AuditTrail { get; internal set; }
 
@@ -62,11 +57,15 @@ namespace Elasticsearch.Net
 		{
 			var r = this;
 			var e = r.OriginalException;
-			var response = this.ResponseBodyInBytes?.Utf8String() ?? ResponseStatics.AlreadyCaptured;
+			string response = "<Response stream not captured or already read to completion by serializer, set ExposeRawResponse() on connectionsettings to force it to be set on>";
+			if (this.ResponseBodyInBytes != null)
+				response = this.ResponseBodyInBytes.Utf8String();
 
-			var requestJson = r.RequestBodyInBytes?.Utf8String();
+			string requestJson = null;
+			if (r.RequestBodyInBytes != null)
+				requestJson = r.RequestBodyInBytes.Utf8String();
 
-			var print = string.Format(ResponseStatics.PrintFormat,
+			var print = _printFormat.F(
 				Environment.NewLine,
 				r.HttpStatusCode.HasValue ? r.HttpStatusCode.Value.ToString(CultureInfo.InvariantCulture) : "-1",
 				r.HttpMethod,
@@ -75,8 +74,11 @@ namespace Elasticsearch.Net
 				response
 			);
 			if (!this.Success && e != null)
-				print += string.Format(ResponseStatics.ErrorFormat,Environment.NewLine, e.Message, e.StackTrace);
+			{
+				print += _errorFormat.F(Environment.NewLine, e.Message, e.StackTrace);
+			}
 			return print;
 		}
+
 	}
 }

@@ -52,7 +52,8 @@ namespace Tests.Framework.Integration
 				.Mappings(pm => pm
 					.Map("_default_", m => m
 						.DynamicTemplates(dt => dt
-							.DynamicTemplate("raw_field", dtt => dtt
+							.Add(dtt => dtt
+								.Name("raw_fields") //register a raw fields dynamic template
 								.Match("*") //matches all fields
 								.MatchMappingType("string") //that are a string
 								.Mapping(tm => tm

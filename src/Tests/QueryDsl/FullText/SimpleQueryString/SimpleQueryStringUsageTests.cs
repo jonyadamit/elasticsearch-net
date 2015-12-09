@@ -30,6 +30,7 @@ namespace Tests.QueryDsl.FullText.SimpleQueryString
 				analyze_wildcard = true,
 				minimum_should_match = "30%"
 			}
+
 		};
 
 		protected override QueryContainer QueryInitializer => new SimpleQueryStringQuery
@@ -63,12 +64,5 @@ namespace Tests.QueryDsl.FullText.SimpleQueryString
 				.AnalyzeWildcard()
 				.MinimumShouldMatch("30%")
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<ISimpleQueryStringQuery>(a => a.SimpleQueryString)
-		{
-			q => q.Query = null,
-			q => q.Query = string.Empty,
-			q =>  q.Fields = null
-		};
 	}
 }

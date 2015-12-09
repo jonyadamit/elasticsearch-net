@@ -7,39 +7,39 @@ namespace Nest
 	public partial interface IElasticClient
 	{
 		/// <inheritdoc/>
-		IAcknowledgedResponse DeleteScript(Name language, Id id, Func<DeleteScriptDescriptor, IDeleteScriptRequest> selector = null);
+		IAcknowledgedResponse DeleteScript(Name language, Id id, Func<DeleteScriptDescriptor, IDeleteScriptRequest> deleteScriptSelector = null);
 
 		/// <inheritdoc/>
-		IAcknowledgedResponse DeleteScript(IDeleteScriptRequest request);
+		IAcknowledgedResponse DeleteScript(IDeleteScriptRequest deleteScriptRequest);
 
 		/// <inheritdoc/>
-		Task<IAcknowledgedResponse> DeleteScriptAsync(Name language, Id id, Func<DeleteScriptDescriptor, IDeleteScriptRequest> selector = null);
+		Task<IAcknowledgedResponse> DeleteScriptAsync(Name language, Id id, Func<DeleteScriptDescriptor, IDeleteScriptRequest> deleteScriptSelector = null);
 
 		/// <inheritdoc/>
-		Task<IAcknowledgedResponse> DeleteScriptAsync(IDeleteScriptRequest request);
+		Task<IAcknowledgedResponse> DeleteScriptAsync(IDeleteScriptRequest deleteScriptRequest);
 
 	}
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IAcknowledgedResponse DeleteScript(IDeleteScriptRequest request) => 
+		public IAcknowledgedResponse DeleteScript(IDeleteScriptRequest deleteScriptRequest) => 
 			this.Dispatcher.Dispatch<IDeleteScriptRequest, DeleteScriptRequestParameters, AcknowledgedResponse>(
-				request,
+				deleteScriptRequest,
 				(p, d) => this.LowLevelDispatch.DeleteScriptDispatch<AcknowledgedResponse>(p)
 			);
 
 		/// <inheritdoc/>
-		public IAcknowledgedResponse DeleteScript(Name language, Id id, Func<DeleteScriptDescriptor, IDeleteScriptRequest> selector = null) =>
-			this.DeleteScript(selector.InvokeOrDefault(new DeleteScriptDescriptor(language, id)));
+		public IAcknowledgedResponse DeleteScript(Name language, Id id, Func<DeleteScriptDescriptor, IDeleteScriptRequest> deleteScriptSelector = null) =>
+			this.DeleteScript(deleteScriptSelector.InvokeOrDefault(new DeleteScriptDescriptor(language, id)));
 
 		/// <inheritdoc/>
-		public Task<IAcknowledgedResponse> DeleteScriptAsync(Name language, Id id, Func<DeleteScriptDescriptor, IDeleteScriptRequest> selector = null) => 
-			this.DeleteScriptAsync(selector.InvokeOrDefault(new DeleteScriptDescriptor(language, id)));
+		public Task<IAcknowledgedResponse> DeleteScriptAsync(Name language, Id id, Func<DeleteScriptDescriptor, IDeleteScriptRequest> deleteScriptSelector = null) => 
+			this.DeleteScriptAsync(deleteScriptSelector.InvokeOrDefault(new DeleteScriptDescriptor(language, id)));
 
 		/// <inheritdoc/>
-		public Task<IAcknowledgedResponse> DeleteScriptAsync(IDeleteScriptRequest request) => 
+		public Task<IAcknowledgedResponse> DeleteScriptAsync(IDeleteScriptRequest deleteScriptRequest) => 
 			this.Dispatcher.DispatchAsync<IDeleteScriptRequest, DeleteScriptRequestParameters, AcknowledgedResponse, IAcknowledgedResponse>(
-				request,
+				deleteScriptRequest,
 				(p, d) => this.LowLevelDispatch.DeleteScriptDispatchAsync<AcknowledgedResponse>(p)
 			);
 	}

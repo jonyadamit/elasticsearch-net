@@ -11,36 +11,36 @@ namespace Nest
 	public partial interface IElasticClient
 	{
 		/// <inheritdoc/>
-		IUpgradeResponse Upgrade(IUpgradeRequest request);
+		IUpgradeResponse Upgrade(IUpgradeRequest upgradeRequest);
 
 		/// <inheritdoc/>
-		IUpgradeResponse Upgrade(Indices indices, Func<UpgradeDescriptor, IUpgradeRequest> selector = null);
+		IUpgradeResponse Upgrade(Indices indices, Func<UpgradeDescriptor, IUpgradeRequest> upgradeSelector = null);
 
 		/// <inheritdoc/>
-		Task<IUpgradeResponse> UpgradeAsync(IUpgradeRequest request);
+		Task<IUpgradeResponse> UpgradeAsync(IUpgradeRequest upgradeRequest);
 
 		/// <inheritdoc/>
-		Task<IUpgradeResponse> UpgradeAsync(Indices indices, Func<UpgradeDescriptor, IUpgradeRequest> selector = null);
+		Task<IUpgradeResponse> UpgradeAsync(Indices indices, Func<UpgradeDescriptor, IUpgradeRequest> upgradeSelector = null);
 	}
 
 	public partial class ElasticClient
 	{
-		public IUpgradeResponse Upgrade(IUpgradeRequest request) =>
+		public IUpgradeResponse Upgrade(IUpgradeRequest upgradeRequest) =>
 			this.Dispatcher.Dispatch<IUpgradeRequest, UpgradeRequestParameters, UpgradeResponse>(
-				request,
+				upgradeRequest,
 				(p, d) => this.LowLevelDispatch.IndicesUpgradeDispatch<UpgradeResponse>(p)
 			);
 
-		public IUpgradeResponse Upgrade(Indices indices, Func<UpgradeDescriptor, IUpgradeRequest> selector = null) =>
-			this.Upgrade(selector.InvokeOrDefault(new UpgradeDescriptor().Index(indices)));
+		public IUpgradeResponse Upgrade(Indices indices, Func<UpgradeDescriptor, IUpgradeRequest> upgradeSelector = null) =>
+			this.Upgrade(upgradeSelector.InvokeOrDefault(new UpgradeDescriptor().Index(indices)));
 
-		public Task<IUpgradeResponse> UpgradeAsync(IUpgradeRequest request) =>
+		public Task<IUpgradeResponse> UpgradeAsync(IUpgradeRequest upgradeRequest) =>
 			this.Dispatcher.DispatchAsync<IUpgradeRequest, UpgradeRequestParameters, UpgradeResponse, IUpgradeResponse>(
-				request,
+				upgradeRequest,
 				(p, d) => this.LowLevelDispatch.IndicesUpgradeDispatchAsync<UpgradeResponse>(p)
 			);
 
-		public Task<IUpgradeResponse> UpgradeAsync(Indices indices, Func<UpgradeDescriptor, IUpgradeRequest> selector = null) =>
-			this.UpgradeAsync(selector.InvokeOrDefault(new UpgradeDescriptor().Index(indices)));
+		public Task<IUpgradeResponse> UpgradeAsync(Indices indices, Func<UpgradeDescriptor, IUpgradeRequest> upgradeSelector = null) =>
+			this.UpgradeAsync(upgradeSelector.InvokeOrDefault(new UpgradeDescriptor().Index(indices)));
 	}
 }

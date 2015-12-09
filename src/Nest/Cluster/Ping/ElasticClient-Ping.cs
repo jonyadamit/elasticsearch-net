@@ -16,40 +16,40 @@ namespace Nest
 		/// <summary>
 		/// Executes a HEAD request to the cluster to determine whether it's up or not.
 		/// </summary>
-		IPingResponse Ping(Func<PingDescriptor, IPingRequest> selector = null);
+		IPingResponse Ping(Func<PingDescriptor, IPingRequest> pingSelector = null);
 
 		/// <inheritdoc/>
-		Task<IPingResponse> PingAsync(Func<PingDescriptor, IPingRequest> selector = null);
+		Task<IPingResponse> PingAsync(Func<PingDescriptor, IPingRequest> pingSelector = null);
 
 		/// <inheritdoc/>
-		IPingResponse Ping(IPingRequest request);
+		IPingResponse Ping(IPingRequest pingRequest);
 
 		/// <inheritdoc/>
-		Task<IPingResponse> PingAsync(IPingRequest request);
+		Task<IPingResponse> PingAsync(IPingRequest pingRequest);
 	}
 
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IPingResponse Ping(Func<PingDescriptor, IPingRequest> selector = null) =>
-			this.Ping(selector.InvokeOrDefault(new PingDescriptor()));
+		public IPingResponse Ping(Func<PingDescriptor, IPingRequest> pingSelector = null) =>
+			this.Ping(pingSelector.InvokeOrDefault(new PingDescriptor()));
 
 		/// <inheritdoc/>
-		public Task<IPingResponse> PingAsync(Func<PingDescriptor, IPingRequest> selector = null) =>
-			this.PingAsync(selector.InvokeOrDefault(new PingDescriptor()));
+		public Task<IPingResponse> PingAsync(Func<PingDescriptor, IPingRequest> pingSelector = null) =>
+			this.PingAsync(pingSelector.InvokeOrDefault(new PingDescriptor()));
 
 		/// <inheritdoc/>
-		public IPingResponse Ping(IPingRequest request) => 
+		public IPingResponse Ping(IPingRequest pingRequest) => 
 			this.Dispatcher.Dispatch<IPingRequest, PingRequestParameters, PingResponse>(
-				SetPingTimeout(request),
+				SetPingTimeout(pingRequest),
 				new PingConverter(DeserializePingResponse),
 				(p, d) => this.LowLevelDispatch.PingDispatch<PingResponse>(p)
 			);
 
 		/// <inheritdoc/>
-		public Task<IPingResponse> PingAsync(IPingRequest request) => 
+		public Task<IPingResponse> PingAsync(IPingRequest pingRequest) => 
 			this.Dispatcher.DispatchAsync<IPingRequest, PingRequestParameters, PingResponse, IPingResponse>(
-				SetPingTimeout(request),
+				SetPingTimeout(pingRequest),
 				new PingConverter(DeserializePingResponse),
 				(p, d) => this.LowLevelDispatch.PingDispatchAsync<PingResponse>(p)
 			);

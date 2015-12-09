@@ -33,12 +33,17 @@ namespace Nest
 	}
 
 	public abstract class MetricAggregationDescriptorBase<TMetricAggregation, TMetricAggregationInterface, T> 
-		:  DescriptorBase<TMetricAggregation, TMetricAggregationInterface>, IMetricAggregation 
+		:  IMetricAggregation 
 		where TMetricAggregation : MetricAggregationDescriptorBase<TMetricAggregation, TMetricAggregationInterface, T>
 			, TMetricAggregationInterface, IMetricAggregation 
 		where T : class
 		where TMetricAggregationInterface : class, IMetricAggregation
 	{
+		protected TMetricAggregation Assign(Action<TMetricAggregationInterface> assigner) =>
+			Fluent.Assign(((TMetricAggregation)this), assigner);
+
+		protected TMetricAggregationInterface Self => (TMetricAggregation)this;
+
 		Field IMetricAggregation.Field { get; set; }
 		
 		IScript IMetricAggregation.Script { get; set; }

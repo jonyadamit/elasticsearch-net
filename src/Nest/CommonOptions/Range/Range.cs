@@ -7,7 +7,7 @@ namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
 	[JsonConverter(typeof(ReadAsTypeJsonConverter<Range>))]
-	public interface IRange 
+	public interface IRange : INestSerializable
 	{
 		[JsonProperty(PropertyName = "from")]
 		double? From { get; set; }

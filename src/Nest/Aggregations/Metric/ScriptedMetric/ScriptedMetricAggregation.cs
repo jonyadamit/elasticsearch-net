@@ -7,7 +7,7 @@ using System.Text;
 namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	[ContractJsonConverter(typeof(AggregationJsonConverter<ScriptedMetricAggregation>))]
+	[JsonConverter(typeof(ReadAsTypeJsonConverter<ScriptedMetricAggregation>))]
 	public interface IScriptedMetricAggregation : IMetricAggregation
 	{
 		[JsonProperty("init_script")]

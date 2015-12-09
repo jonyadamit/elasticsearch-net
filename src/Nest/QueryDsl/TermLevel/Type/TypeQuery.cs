@@ -15,10 +15,10 @@ namespace Nest
 
 	public class TypeQuery : QueryBase, ITypeQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public TypeName Value { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.Type = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.Type = this;
 		internal static bool IsConditionless(ITypeQuery q) => q.Value.IsConditionless();
 	}
 	
@@ -26,13 +26,13 @@ namespace Nest
 		: QueryDescriptorBase<TypeQueryDescriptor, ITypeQuery>
 		, ITypeQuery
 	{
-		protected override bool Conditionless => TypeQuery.IsConditionless(this);
+		bool IQuery.Conditionless => TypeQuery.IsConditionless(this);
 
 		[JsonProperty(PropertyName = "value")]
 		TypeName ITypeQuery.Value { get; set; }
 
 		public TypeQueryDescriptor Value<T>() => Assign(a => a.Value = typeof(T));
 
-		public TypeQueryDescriptor Value(TypeName type) => Assign(a => a.Value = type);
+		public TypeQueryDescriptor Value(string type) => Assign(a => a.Value = type);
 	}
 }

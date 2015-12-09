@@ -11,34 +11,24 @@ namespace Nest
 	[JsonConverter(typeof(TermsQueryJsonConverter))]
 	public interface ITermsQuery : IFieldNameQuery
 	{
-		MinimumShouldMatch MinimumShouldMatch { get; set; }
+		string MinimumShouldMatch { get; set; }
 		bool? DisableCoord { get; set; }
 		IEnumerable<object> Terms { get; set; }
-		IFieldLookup TermsLookup { get; set; }
+		IExternalFieldDeclaration ExternalField { get; set; }
 	}
 
 	public class TermsQuery : FieldNameQueryBase, ITermsQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
-		public MinimumShouldMatch MinimumShouldMatch { get; set; }
+		bool IQuery.Conditionless => IsConditionless(this);
+		public string MinimumShouldMatch { get; set; }
 		public bool? DisableCoord { get; set; }
 		public IEnumerable<object> Terms { get; set; }
-		public IFieldLookup TermsLookup { get; set; }
+		public IExternalFieldDeclaration ExternalField { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.Terms = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.Terms = this;
 		internal static bool IsConditionless(ITermsQuery q)
 		{
-			return q.Field.IsConditionless() 
-				|| (
-				(!q.Terms.HasAny() || q.Terms.All(t=>t == null || ((t as string)?.IsNullOrEmpty()).GetValueOrDefault(false))
-				)
-				&& 
-				(q.TermsLookup == null
-					|| q.TermsLookup.Id == null
-					|| q.TermsLookup.Path.IsConditionless()
-					|| q.TermsLookup.Index == null
-					|| q.TermsLookup.Type == null
-				));
+			return q.Field.IsConditionless() || (!q.Terms.HasAny() && q.ExternalField == null);
 		}
 	}
 
@@ -47,27 +37,40 @@ namespace Nest
 	/// This is a simpler syntax query for using a bool query with several term queries in the should clauses.
 	/// </summary>
 	/// <typeparam name="T">The type that represents the expected hit type</typeparam>
-	/// <typeparam name="TValue">The type of the field that we want to specfify terms for</typeparam>
-	public class TermsQueryDescriptor<T, TValue> 
-		: FieldNameQueryDescriptorBase<TermsQueryDescriptor<T, TValue>, ITermsQuery, T>
+	/// <typeparam name="K">The type of the field that we want to specfify terms for</typeparam>
+	public class TermsQueryDescriptor<T, K> 
+		: FieldNameQueryDescriptorBase<TermsQueryDescriptor<T, K>, ITermsQuery, T>
 		, ITermsQuery where T : class
 	{
-		protected override bool Conditionless => TermsQuery.IsConditionless(this);
-		MinimumShouldMatch ITermsQuery.MinimumShouldMatch { get; set; }
+		bool IQuery.Conditionless => TermsQuery.IsConditionless(this);
+		string ITermsQuery.MinimumShouldMatch { get; set; }
 		bool? ITermsQuery.DisableCoord { get; set; }
 		IEnumerable<object> ITermsQuery.Terms { get; set; }
-		IFieldLookup ITermsQuery.TermsLookup { get; set; }
+		IExternalFieldDeclaration ITermsQuery.ExternalField { get; set; }
 
-		public TermsQueryDescriptor<T, TValue> TermsLookup<TOther>(Func<FieldLookupDescriptor<TOther>, IFieldLookup> selector)
-			where TOther : class => Assign(a => a.TermsLookup = selector(new FieldLookupDescriptor<TOther>()));
+		public TermsQueryDescriptor<T, K> OnExternalField<TOther>(
+			Func<ExternalFieldDeclarationDescriptor<TOther>, ExternalFieldDeclarationDescriptor<TOther>> selector)
+			where TOther : class => Assign(a => a.ExternalField = selector(new ExternalFieldDeclarationDescriptor<TOther>()));
 
-		public TermsQueryDescriptor<T, TValue> MinimumShouldMatch(MinimumShouldMatch minMatch) => Assign(a => a.MinimumShouldMatch = minMatch);
+		public TermsQueryDescriptor<T, K> MinimumShouldMatch(string minMatch) => 
+			Assign(a => a.MinimumShouldMatch = minMatch);
 
-		public TermsQueryDescriptor<T, TValue> DisableCoord(bool? disable = true) => Assign(a => a.DisableCoord = disable);
+		public TermsQueryDescriptor<T, K> MinimumShouldMatch(int minMatch) => Assign(a => a.MinimumShouldMatch = minMatch.ToString(CultureInfo.InvariantCulture));
 
-		public TermsQueryDescriptor<T, TValue> Terms(IEnumerable<TValue> terms) => Assign(a => a.Terms = terms.Cast<object>());
+		public TermsQueryDescriptor<T, K> DisableCoord() => Assign(a => a.DisableCoord = true);
 
-		public TermsQueryDescriptor<T, TValue> Terms(params TValue[] terms) => Assign(a => a.Terms = terms.Cast<object>());
+		public TermsQueryDescriptor<T, K> Terms(IEnumerable<string> terms) => Assign(a =>
+		{
+			if (terms.HasAny())
+				terms = terms.Where(t => !t.IsNullOrEmpty());
+			a.Terms = terms;
+		});
 
+		public TermsQueryDescriptor<T, K> Terms(IEnumerable<K> terms) => Assign(a =>
+		{
+			if (terms.HasAny())
+				terms = terms.Where(t => t != null).ToArray();
+			a.Terms = terms.Cast<object>();
+		});
 	}
 }

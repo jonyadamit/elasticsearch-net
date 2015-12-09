@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace Nest
 {
-	[ContractJsonConverter(typeof(FieldsJsonConverter))]
 	public class Fields : IUrlParameter
 	{
 		internal readonly List<Field> ListOfFields;

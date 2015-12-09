@@ -39,9 +39,8 @@ namespace Nest
 	{
 		private IBulkCreateOperation<T> Self => this; 
 
-		protected override string BulkOperationType => "create";
-		protected override Type BulkOperationClrType => typeof(T);
-
+		protected override string BulkOperationType { get { return "create"; } }
+		protected override Type BulkOperationClrType { get { return typeof(T); } }
 		protected override object GetBulkOperationBody()
 		{
 			return Self.Document;
@@ -59,7 +58,7 @@ namespace Nest
 		/// </summary>
 		public BulkCreateDescriptor<T> Index(string index)
 		{
-			index.ThrowIfNullOrEmpty(nameof(index));
+			index.ThrowIfNullOrEmpty("indices");
 			Self.Index = index;
 			return this;
 		}
@@ -70,7 +69,7 @@ namespace Nest
 		/// </summary>
 		public BulkCreateDescriptor<T> Type(string type)
 		{
-			type.ThrowIfNullOrEmpty(nameof(type));
+			type.ThrowIfNullOrEmpty("type");
 			Self.Type = type;
 			return this;
 		}
@@ -80,7 +79,7 @@ namespace Nest
 		/// </summary>
 		public BulkCreateDescriptor<T> Type(Type type)
 		{
-			type.ThrowIfNull(nameof(type));
+			type.ThrowIfNull("type");
 			Self.Type = type;
 			return this;
 		}

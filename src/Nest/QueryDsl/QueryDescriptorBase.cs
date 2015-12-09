@@ -16,7 +16,6 @@ namespace Nest
 		double? IQuery.Boost { get; set; }
 		public TDescriptor Boost(double boost) => Assign(a => a.Boost = boost);
 
-		bool IQuery.Conditionless => this.Conditionless;
-		protected abstract bool Conditionless { get; }
+		bool IQuery.Conditionless { get; }
 	}
 }

@@ -16,10 +16,10 @@ namespace Nest
 
 	public class SpanMultiTermQuery : QueryBase, ISpanMultiTermQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public QueryContainer Match { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.SpanMultiTerm = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.SpanMultiTerm = this;
 		internal static bool IsConditionless(ISpanMultiTermQuery q) => q.Match == null || q.Match.IsConditionless;
 	}
 
@@ -28,10 +28,10 @@ namespace Nest
 		, ISpanMultiTermQuery
 		where T : class
 	{
-		protected override bool Conditionless => SpanMultiTermQuery.IsConditionless(this);
+		bool IQuery.Conditionless => SpanMultiTermQuery.IsConditionless(this);
 		QueryContainer ISpanMultiTermQuery.Match { get; set; }
 
 		public SpanMultiTermQueryDescriptor<T> Match(Func<QueryContainerDescriptor<T>, QueryContainer> selector) =>
-			Assign(a => a.Match = selector?.InvokeQuery(new QueryContainerDescriptor<T>()));
+			Assign(a => a.Match = selector(new QueryContainerDescriptor<T>()));
 	}
 }

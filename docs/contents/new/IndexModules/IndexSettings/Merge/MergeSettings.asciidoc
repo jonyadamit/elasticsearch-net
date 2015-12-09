@@ -23,7 +23,7 @@ s => s
 
 [source, csharp]
 ----
-new Nest.IndexSettings
+new IndexSettings
 {
 	Merge = new MergeSettings
 	{

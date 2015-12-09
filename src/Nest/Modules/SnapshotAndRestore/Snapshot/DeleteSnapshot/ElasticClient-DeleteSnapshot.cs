@@ -16,13 +16,13 @@ namespace Nest
 		IAcknowledgedResponse DeleteSnapshot(Name repository, Name snapshotName, Func<DeleteSnapshotDescriptor, IDeleteSnapshotRequest> selector = null);
 
 		/// <inheritdoc/>
-		IAcknowledgedResponse DeleteSnapshot(IDeleteSnapshotRequest request);
+		IAcknowledgedResponse DeleteSnapshot(IDeleteSnapshotRequest deleteSnapshotRequest);
 
 		/// <inheritdoc/>
 		Task<IAcknowledgedResponse> DeleteSnapshotAsync(Name repository, Name snapshotName, Func<DeleteSnapshotDescriptor, IDeleteSnapshotRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<IAcknowledgedResponse> DeleteSnapshotAsync(IDeleteSnapshotRequest request);
+		Task<IAcknowledgedResponse> DeleteSnapshotAsync(IDeleteSnapshotRequest deleteSnapshotRequest);
 
 	}
 	public partial class ElasticClient
@@ -32,9 +32,9 @@ namespace Nest
 			this.DeleteSnapshot(selector.InvokeOrDefault(new DeleteSnapshotDescriptor(repository, snapshotName)));
 
 		/// <inheritdoc/>
-		public IAcknowledgedResponse DeleteSnapshot(IDeleteSnapshotRequest request) => 
+		public IAcknowledgedResponse DeleteSnapshot(IDeleteSnapshotRequest deleteSnapshotRequest) => 
 			this.Dispatcher.Dispatch<IDeleteSnapshotRequest, DeleteSnapshotRequestParameters, AcknowledgedResponse>(
-				request,
+				deleteSnapshotRequest,
 				(p, d) => this.LowLevelDispatch.SnapshotDeleteDispatch<AcknowledgedResponse>(p)
 			);
 
@@ -43,9 +43,9 @@ namespace Nest
 			this.DeleteSnapshotAsync(selector.InvokeOrDefault(new DeleteSnapshotDescriptor(repository, snapshotName)));
 
 		/// <inheritdoc/>
-		public Task<IAcknowledgedResponse> DeleteSnapshotAsync(IDeleteSnapshotRequest request) => 
+		public Task<IAcknowledgedResponse> DeleteSnapshotAsync(IDeleteSnapshotRequest deleteSnapshotRequest) => 
 			this.Dispatcher.DispatchAsync<IDeleteSnapshotRequest, DeleteSnapshotRequestParameters, AcknowledgedResponse, IAcknowledgedResponse>(
-				request,
+				deleteSnapshotRequest,
 				(p, d) => this.LowLevelDispatch.SnapshotDeleteDispatchAsync<AcknowledgedResponse>(p)
 			);
 	}

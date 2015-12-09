@@ -21,13 +21,13 @@ namespace Nest
 		IAcknowledgedResponse DeleteWarmer(Indices indices, Names names, Func<DeleteWarmerDescriptor, IDeleteWarmerRequest> selector = null);
 
 		/// <inheritdoc/>
-		IAcknowledgedResponse DeleteWarmer(IDeleteWarmerRequest request);
+		IAcknowledgedResponse DeleteWarmer(IDeleteWarmerRequest deleteWarmerRequest);
 
 		/// <inheritdoc/>
 		Task<IAcknowledgedResponse> DeleteWarmerAsync(Indices indices, Names names, Func<DeleteWarmerDescriptor, IDeleteWarmerRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<IAcknowledgedResponse> DeleteWarmerAsync(IDeleteWarmerRequest request);
+		Task<IAcknowledgedResponse> DeleteWarmerAsync(IDeleteWarmerRequest deleteWarmerRequest);
 
 	}
 
@@ -38,9 +38,9 @@ namespace Nest
 			this.DeleteWarmer(selector.InvokeOrDefault(new DeleteWarmerDescriptor(indices, names)));
 
 		/// <inheritdoc/>
-		public IAcknowledgedResponse DeleteWarmer(IDeleteWarmerRequest request) => 
+		public IAcknowledgedResponse DeleteWarmer(IDeleteWarmerRequest deleteWarmerRequest) => 
 			this.Dispatcher.Dispatch<IDeleteWarmerRequest, DeleteWarmerRequestParameters, AcknowledgedResponse>(
-				request,
+				deleteWarmerRequest,
 				(p, d) => this.LowLevelDispatch.IndicesDeleteWarmerDispatch<AcknowledgedResponse>(p)
 			);
 
@@ -49,9 +49,9 @@ namespace Nest
 			this.DeleteWarmerAsync(selector.InvokeOrDefault(new DeleteWarmerDescriptor(indices, names)));
 
 		/// <inheritdoc/>
-		public Task<IAcknowledgedResponse> DeleteWarmerAsync(IDeleteWarmerRequest request) => 
+		public Task<IAcknowledgedResponse> DeleteWarmerAsync(IDeleteWarmerRequest deleteWarmerRequest) => 
 			this.Dispatcher.DispatchAsync<IDeleteWarmerRequest, DeleteWarmerRequestParameters, AcknowledgedResponse, IAcknowledgedResponse>(
-				request,
+				deleteWarmerRequest,
 				(p, d) => this.LowLevelDispatch.IndicesDeleteWarmerDispatchAsync<AcknowledgedResponse>(p)
 			);
 	}

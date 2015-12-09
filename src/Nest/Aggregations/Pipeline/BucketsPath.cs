@@ -90,7 +90,6 @@ namespace Nest
 					writer.WritePropertyName(kv.Key);
 					writer.WriteValue(kv.Value);
 				}
-				writer.WriteEndObject();
 				return;
 			}
 			writer.WriteNull();

@@ -23,9 +23,6 @@ namespace Nest
 
 		[JsonProperty("distance_error_pct")]
 		double? DistanceErrorPercentage { get; set; }
-
-		[JsonProperty("points_only")]
-		bool? PointsOnly { get; set; }
 	}
 
 	public class GeoShapeProperty : Property, IGeoShapeProperty
@@ -41,8 +38,6 @@ namespace Nest
 		public int? TreeLevels { get; set; }
 
 		public double? DistanceErrorPercentage { get; set; }
-
-		public bool? PointsOnly { get; set; }
 	}
 
 	public class GeoShapePropertyDescriptor<T>
@@ -54,7 +49,6 @@ namespace Nest
 		GeoOrientation? IGeoShapeProperty.Orientation { get; set; }
 		int? IGeoShapeProperty.TreeLevels { get; set; }
 		double? IGeoShapeProperty.DistanceErrorPercentage { get; set; }
-		bool? IGeoShapeProperty.PointsOnly { get; set; }
 
 		public GeoShapePropertyDescriptor() : base("geo_shape") { }
 
@@ -69,7 +63,5 @@ namespace Nest
 
 		public GeoShapePropertyDescriptor<T> DistanceErrorPercentage(double distanceErrorPercentage) => 
 			Assign(a => a.DistanceErrorPercentage = distanceErrorPercentage);
-
-		public GeoShapePropertyDescriptor<T> PointsOnly(bool pointsOnly = true) => Assign(a => a.PointsOnly = pointsOnly);
 	}
 }

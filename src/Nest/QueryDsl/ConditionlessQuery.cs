@@ -21,13 +21,13 @@ namespace Nest
 
 		QueryContainer IConditionlessQuery.Fallback { get; set; }
 
-		protected override bool Conditionless => (Self.Query == null || Self.Query.IsConditionless)
+		bool IQuery.Conditionless => (Self.Query == null || Self.Query.IsConditionless)
 										&& (Self.Fallback == null || Self.Fallback.IsConditionless);
 
 		public ConditionlessQueryDescriptor<T> Query(Func<QueryContainerDescriptor<T>, QueryContainer> querySelector) => 
-			Assign(a => a.Query = querySelector?.InvokeQuery(new QueryContainerDescriptor<T>()));
+			Assign(a => a.Query = querySelector?.Invoke(new QueryContainerDescriptor<T>()));
 
 		public ConditionlessQueryDescriptor<T> Fallback(Func<QueryContainerDescriptor<T>, QueryContainer> querySelector) =>
-			Assign(a => a.Fallback = querySelector?.InvokeQuery(new QueryContainerDescriptor<T>()));
+			Assign(a => a.Fallback = querySelector?.Invoke(new QueryContainerDescriptor<T>()));
 	}
 }

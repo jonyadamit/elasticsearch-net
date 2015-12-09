@@ -13,40 +13,40 @@ namespace Nest
 		/// data "wasted" on deletes, and so on.
 		/// <para> </para>http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-segments.html
 		/// </summary>
-		/// <param name="selector">A descriptor that describes the parameters for the segments operation</param>
-		ISegmentsResponse Segments(Indices indices, Func<SegmentsDescriptor, ISegmentsRequest> selector = null);
+		/// <param name="segmentsSelector">A descriptor that describes the parameters for the segments operation</param>
+		ISegmentsResponse Segments(Indices indices, Func<SegmentsDescriptor, ISegmentsRequest> segmentsSelector = null);
 
 		/// <inheritdoc/>
-		ISegmentsResponse Segments(ISegmentsRequest request);
+		ISegmentsResponse Segments(ISegmentsRequest segmentsRequest);
 
 		/// <inheritdoc/>
-		Task<ISegmentsResponse> SegmentsAsync(Indices indices, Func<SegmentsDescriptor, ISegmentsRequest> selector = null);
+		Task<ISegmentsResponse> SegmentsAsync(Indices indices, Func<SegmentsDescriptor, ISegmentsRequest> segmentsSelector = null);
 
 		/// <inheritdoc/>
-		Task<ISegmentsResponse> SegmentsAsync(ISegmentsRequest request);
+		Task<ISegmentsResponse> SegmentsAsync(ISegmentsRequest segmentsRequest);
 
 	}
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public ISegmentsResponse Segments(Indices indices, Func<SegmentsDescriptor, ISegmentsRequest> selector = null) =>
-			this.Segments(selector.InvokeOrDefault(new SegmentsDescriptor().Index(indices)));
+		public ISegmentsResponse Segments(Indices indices, Func<SegmentsDescriptor, ISegmentsRequest> segmentsSelector = null) =>
+			this.Segments(segmentsSelector.InvokeOrDefault(new SegmentsDescriptor().Index(indices)));
 
 		/// <inheritdoc/>
-		public ISegmentsResponse Segments(ISegmentsRequest request) => 
+		public ISegmentsResponse Segments(ISegmentsRequest segmentsRequest) => 
 			this.Dispatcher.Dispatch<ISegmentsRequest, SegmentsRequestParameters, SegmentsResponse>(
-				request,
+				segmentsRequest,
 				(p, d) => this.LowLevelDispatch.IndicesSegmentsDispatch<SegmentsResponse>(p)
 			);
 
 		/// <inheritdoc/>
-		public Task<ISegmentsResponse> SegmentsAsync(Indices indices, Func<SegmentsDescriptor, ISegmentsRequest> selector = null) => 
-			this.SegmentsAsync(selector.InvokeOrDefault(new SegmentsDescriptor().Index(indices)));
+		public Task<ISegmentsResponse> SegmentsAsync(Indices indices, Func<SegmentsDescriptor, ISegmentsRequest> segmentsSelector = null) => 
+			this.SegmentsAsync(segmentsSelector.InvokeOrDefault(new SegmentsDescriptor().Index(indices)));
 
 		/// <inheritdoc/>
-		public Task<ISegmentsResponse> SegmentsAsync(ISegmentsRequest request) => 
+		public Task<ISegmentsResponse> SegmentsAsync(ISegmentsRequest segmentsRequest) => 
 			this.Dispatcher.DispatchAsync<ISegmentsRequest, SegmentsRequestParameters, SegmentsResponse, ISegmentsResponse>(
-				request,
+				segmentsRequest,
 				(p, d) => this.LowLevelDispatch.IndicesSegmentsDispatchAsync<SegmentsResponse>(p)
 			);
 	}

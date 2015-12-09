@@ -9,19 +9,19 @@ namespace Nest
 	public interface IMultiPolygonGeoShape : IGeoShape
 	{
 		[JsonProperty("coordinates")]
-		IEnumerable<IEnumerable<IEnumerable<GeoCoordinate>>> Coordinates { get; set; }
+		IEnumerable<IEnumerable<IEnumerable<IEnumerable<double>>>> Coordinates { get; set; }
 	}
 
 	public class MultiPolygonGeoShape : GeoShape, IMultiPolygonGeoShape
 	{
 		public MultiPolygonGeoShape() : this(null) { }
 
-		public MultiPolygonGeoShape(IEnumerable<IEnumerable<IEnumerable<GeoCoordinate>>> coordinates) 
+		public MultiPolygonGeoShape(IEnumerable<IEnumerable<IEnumerable<IEnumerable<double>>>> coordinates) 
 			: base("multipolygon") 
 		{
-			this.Coordinates = coordinates;
+			this.Coordinates = coordinates ?? new List<List<List<List<double>>>>();
 		}
 
-		public IEnumerable<IEnumerable<IEnumerable<GeoCoordinate>>> Coordinates { get; set; }
+		public IEnumerable<IEnumerable<IEnumerable<IEnumerable<double>>>> Coordinates { get; set; }
 	}
 }

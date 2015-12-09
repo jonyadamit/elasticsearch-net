@@ -12,44 +12,44 @@ namespace Nest
 		/// <para> </para>http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-validate.html
 		/// </summary>
 		/// <typeparam name="T">The type used to describe the query</typeparam>
-		/// <param name="selector">A descriptor that describes the query operation</param>
-		IValidateResponse Validate<T>(Func<ValidateQueryDescriptor<T>, IValidateQueryRequest> selector)
+		/// <param name="querySelector">A descriptor that describes the query operation</param>
+		IValidateResponse Validate<T>(Func<ValidateQueryDescriptor<T>, IValidateQueryRequest> querySelector)
 			where T : class;
 
 		/// <inheritdoc/>
-		IValidateResponse Validate(IValidateQueryRequest request);
+		IValidateResponse Validate(IValidateQueryRequest validateQueryRequest);
 
 		/// <inheritdoc/>
-		Task<IValidateResponse> ValidateAsync<T>(Func<ValidateQueryDescriptor<T>, IValidateQueryRequest> selector)
+		Task<IValidateResponse> ValidateAsync<T>(Func<ValidateQueryDescriptor<T>, IValidateQueryRequest> querySelector)
 			where T : class;
 
 		/// <inheritdoc/>
-		Task<IValidateResponse> ValidateAsync(IValidateQueryRequest request);
+		Task<IValidateResponse> ValidateAsync(IValidateQueryRequest validateQueryRequest);
 
 	}
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IValidateResponse Validate<T>(Func<ValidateQueryDescriptor<T>, IValidateQueryRequest> selector)
+		public IValidateResponse Validate<T>(Func<ValidateQueryDescriptor<T>, IValidateQueryRequest> querySelector)
 			where T : class =>
-			this.Validate(selector?.Invoke(new ValidateQueryDescriptor<T>()));
+			this.Validate(querySelector?.Invoke(new ValidateQueryDescriptor<T>()));
 
 		/// <inheritdoc/>
-		public IValidateResponse Validate(IValidateQueryRequest request) => 
+		public IValidateResponse Validate(IValidateQueryRequest validateQueryRequest) => 
 			this.Dispatcher.Dispatch<IValidateQueryRequest, ValidateQueryRequestParameters, ValidateResponse>(
-				request,
+				validateQueryRequest,
 				this.LowLevelDispatch.IndicesValidateQueryDispatch<ValidateResponse>
 			);
 
 		/// <inheritdoc/>
-		public Task<IValidateResponse> ValidateAsync<T>(Func<ValidateQueryDescriptor<T>, IValidateQueryRequest> selector)
+		public Task<IValidateResponse> ValidateAsync<T>(Func<ValidateQueryDescriptor<T>, IValidateQueryRequest> querySelector)
 			where T : class => 
-			this.ValidateAsync(selector?.Invoke(new ValidateQueryDescriptor<T>()));
+			this.ValidateAsync(querySelector?.Invoke(new ValidateQueryDescriptor<T>()));
 
 		/// <inheritdoc/>
-		public Task<IValidateResponse> ValidateAsync(IValidateQueryRequest request) => 
+		public Task<IValidateResponse> ValidateAsync(IValidateQueryRequest validateQueryRequest) => 
 			this.Dispatcher.DispatchAsync<IValidateQueryRequest, ValidateQueryRequestParameters, ValidateResponse, IValidateResponse>(
-				request,
+				validateQueryRequest,
 				this.LowLevelDispatch.IndicesValidateQueryDispatchAsync<ValidateResponse>
 			);
 	}

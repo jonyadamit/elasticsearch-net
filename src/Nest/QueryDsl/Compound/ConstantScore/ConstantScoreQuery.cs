@@ -9,30 +9,30 @@ namespace Nest
 	[JsonConverter(typeof(ReadAsTypeJsonConverter<ConstantScoreQueryDescriptor<object>>))]
 	public interface IConstantScoreQuery : IQuery
 	{
-		[JsonProperty(PropertyName = "filter")]
-		QueryContainer Filter { get; set; }
+		[JsonProperty(PropertyName = "query")]
+		QueryContainer Query { get; set; }
 	}
 
 	public class ConstantScoreQuery : QueryBase, IConstantScoreQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public string Lang { get; set; }
 		public string Script { get; set; }
 		public Dictionary<string, object> Params { get; set; }
-		public QueryContainer Filter { get; set; }
+		public QueryContainer Query { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.ConstantScore = this;
-		internal static bool IsConditionless(IConstantScoreQuery q) => q.Filter.IsConditionless();
+		protected override void WrapInContainer(IQueryContainer c) => c.ConstantScore = this;
+		internal static bool IsConditionless(IConstantScoreQuery q) => q.Query == null;
 	}
 
 	public class ConstantScoreQueryDescriptor<T> 
 		: QueryDescriptorBase<ConstantScoreQueryDescriptor<T>, IConstantScoreQuery>
 		, IConstantScoreQuery where T : class
 	{
-		protected override bool Conditionless => ConstantScoreQuery.IsConditionless(this);
-		QueryContainer IConstantScoreQuery.Filter { get; set; }
+		bool IQuery.Conditionless => ConstantScoreQuery.IsConditionless(this);
+		QueryContainer IConstantScoreQuery.Query { get; set; }
 
-		public ConstantScoreQueryDescriptor<T> Filter(Func<QueryContainerDescriptor<T>, QueryContainer> selector) => 
-			Assign(a => a.Filter = selector?.InvokeQuery(new QueryContainerDescriptor<T>()));
+		public ConstantScoreQueryDescriptor<T> Query(Func<QueryContainerDescriptor<T>, QueryContainer> selector) => 
+			Assign(a => a.Query = selector(new QueryContainerDescriptor<T>()));
 	}
 }

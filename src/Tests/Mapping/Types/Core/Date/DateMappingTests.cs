@@ -36,7 +36,6 @@ namespace Tests.Mapping.Types.Core.Date
 				full = new
 				{
 					type = "date",
-					doc_values = true,
 					index_name = "myindex",
 					similarity = "default",
 					store = true,
@@ -58,7 +57,6 @@ namespace Tests.Mapping.Types.Core.Date
 		protected override Func<PropertiesDescriptor<DateTest>, IPromise<IProperties>> FluentProperties => m => m
 			.Date(d => d
 				.Name(o => o.Full)
-				.DocValues()
 				.IndexName("myindex")
 				.Similarity(SimilarityOption.Default)
 				.Store()

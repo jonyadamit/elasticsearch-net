@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 
 namespace Nest
 {
-	[ContractJsonConverter(typeof(CharFilterJsonConverter))]
 	public interface ICharFilter
 	{
 		[JsonProperty("version")]

@@ -63,7 +63,9 @@ namespace Nest
 		public AliasAddDescriptor Filter<T>(Func<QueryContainerDescriptor<T>, QueryContainer> filterSelector)
 			where T : class
 		{
-			Self.Add.QueryDescriptor = filterSelector?.InvokeQuery(new QueryContainerDescriptor<T>());
+			filterSelector.ThrowIfNull("filterSelector");
+
+			Self.Add.QueryDescriptor = filterSelector(new QueryContainerDescriptor<T>());
 			return this;
 		}
 	}

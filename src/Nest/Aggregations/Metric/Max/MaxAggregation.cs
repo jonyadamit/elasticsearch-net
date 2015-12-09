@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	[ContractJsonConverter(typeof(AggregationJsonConverter<MaxAggregation>))]
+	[JsonConverter(typeof(ReadAsTypeJsonConverter<MaxAggregation>))]
 	public interface IMaxAggregation : IMetricAggregation { }
 
 	public class MaxAggregation : MetricAggregationBase, IMaxAggregation

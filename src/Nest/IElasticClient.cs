@@ -12,5 +12,10 @@ namespace Nest
 		IElasticsearchClient Raw { get; }
 		ElasticInferrer Infer { get; }
 
+		ElasticsearchResponse<T> DoRequest<T>(HttpMethod method, string path, PostData<object> data = null, IRequestParameters requestParameters = null)
+			where T : class;
+
+		Task<ElasticsearchResponse<T>> DoRequestAsync<T>(HttpMethod method, string path, PostData<object> data = null, IRequestParameters requestParameters = null)
+			where T : class;
 	}
 }

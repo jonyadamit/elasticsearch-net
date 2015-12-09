@@ -13,40 +13,40 @@ namespace Nest
 		/// This can greatly increase the indexing speed.
 		/// <para> </para>http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/docs-bulk.html
 		/// </summary>
-		/// <param name="request">A descriptor the describe the index/create/delete operation for this bulk operation</param>
-		IBulkResponse Bulk(IBulkRequest request);
+		/// <param name="bulkRequest">A descriptor the describe the index/create/delete operation for this bulk operation</param>
+		IBulkResponse Bulk(IBulkRequest bulkRequest);
 
 		/// <inheritdoc/>
-		IBulkResponse Bulk(Func<BulkDescriptor, IBulkRequest> selector = null);
+		IBulkResponse Bulk(Func<BulkDescriptor, IBulkRequest> bulkSelector = null);
 
 		/// <inheritdoc/>
-		Task<IBulkResponse> BulkAsync(IBulkRequest request);
+		Task<IBulkResponse> BulkAsync(IBulkRequest bulkRequest);
 
 		/// <inheritdoc/>
-		Task<IBulkResponse> BulkAsync(Func<BulkDescriptor, IBulkRequest> selector = null);
+		Task<IBulkResponse> BulkAsync(Func<BulkDescriptor, IBulkRequest> bulkSelector = null);
 
 	}
 
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IBulkResponse Bulk(IBulkRequest request) => 
+		public IBulkResponse Bulk(IBulkRequest bulkRequest) => 
 			this.Dispatcher.Dispatch<IBulkRequest, BulkRequestParameters, BulkResponse>(
-				request, this.LowLevelDispatch.BulkDispatch<BulkResponse>
+				bulkRequest, this.LowLevelDispatch.BulkDispatch<BulkResponse>
 			);
 
 		/// <inheritdoc/>
-		public IBulkResponse Bulk(Func<BulkDescriptor, IBulkRequest> selector = null) =>
-			this.Bulk(selector.InvokeOrDefault(new BulkDescriptor()));
+		public IBulkResponse Bulk(Func<BulkDescriptor, IBulkRequest> bulkSelector = null) =>
+			this.Bulk(bulkSelector.InvokeOrDefault(new BulkDescriptor()));
 
 		/// <inheritdoc/>
-		public Task<IBulkResponse> BulkAsync(IBulkRequest request) => 
+		public Task<IBulkResponse> BulkAsync(IBulkRequest bulkRequest) => 
 			this.Dispatcher.DispatchAsync<IBulkRequest, BulkRequestParameters, BulkResponse, IBulkResponse>(
-				request, this.LowLevelDispatch.BulkDispatchAsync<BulkResponse>
+				bulkRequest, this.LowLevelDispatch.BulkDispatchAsync<BulkResponse>
 			);
 
 		/// <inheritdoc/>
-		public Task<IBulkResponse> BulkAsync(Func<BulkDescriptor, IBulkRequest> selector = null) =>
-			this.BulkAsync(selector.InvokeOrDefault(new BulkDescriptor()));
+		public Task<IBulkResponse> BulkAsync(Func<BulkDescriptor, IBulkRequest> bulkSelector = null) =>
+			this.BulkAsync(bulkSelector.InvokeOrDefault(new BulkDescriptor()));
 	}
 }

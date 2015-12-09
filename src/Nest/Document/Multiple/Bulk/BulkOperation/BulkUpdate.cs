@@ -151,7 +151,7 @@ namespace Nest
 		/// </summary>
 		public BulkUpdateDescriptor<TDocument, TPartialDocument> Index(string index)
 		{
-			index.ThrowIfNullOrEmpty(nameof(index));
+			index.ThrowIfNullOrEmpty("indices");
 			Self.Index = index;
 			return this;
 		}
@@ -161,7 +161,7 @@ namespace Nest
 		/// </summary>
 		public BulkUpdateDescriptor<TDocument, TPartialDocument> Type(string type)
 		{
-			type.ThrowIfNullOrEmpty(nameof(type));
+			type.ThrowIfNullOrEmpty("type");
 			Self.Type = type;
 			return this;
 		}
@@ -171,7 +171,7 @@ namespace Nest
 		/// </summary>
 		public BulkUpdateDescriptor<TDocument, TPartialDocument> Type(Type type)
 		{
-			type.ThrowIfNull(nameof(type));
+			type.ThrowIfNull("type");
 			Self.Type = type;
 			return this;
 		}
@@ -234,28 +234,28 @@ namespace Nest
 
 		public BulkUpdateDescriptor<TDocument, TPartialDocument> Script(string script)
 		{
-			script.ThrowIfNull(nameof(script));
+			script.ThrowIfNull("script");
 			Self.Script = script;
 			return this;
 		}
 
 		public BulkUpdateDescriptor<TDocument, TPartialDocument> ScriptId(string scriptId)
 		{
-			scriptId.ThrowIfNull(nameof(scriptId));
+			scriptId.ThrowIfNull("scriptId");
 			Self.ScriptId = scriptId;
 			return this;
 		}
 
 		public BulkUpdateDescriptor<TDocument, TPartialDocument> ScriptFile(string scriptFile)
 		{
-			scriptFile.ThrowIfNull(nameof(scriptFile));
+			scriptFile.ThrowIfNull("scriptFile");
 			Self.ScriptFile = scriptFile;
 			return this;
 		}
 
 		public BulkUpdateDescriptor<TDocument, TPartialDocument> Params(Func<FluentDictionary<string, object>, FluentDictionary<string, object>> paramDictionary)
 		{
-			paramDictionary.ThrowIfNull(nameof(paramDictionary));
+			paramDictionary.ThrowIfNull("paramDictionary");
 			Self.Params = paramDictionary(new FluentDictionary<string, object>());
 			return this;
 		}

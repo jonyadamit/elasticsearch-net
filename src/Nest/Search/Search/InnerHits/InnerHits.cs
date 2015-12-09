@@ -19,7 +19,8 @@ namespace Nest
 		int? Size { get; set; }
 
 		[JsonProperty(PropertyName = "sort")]
-		IList<ISort> Sort { get; set; }
+		[JsonConverter(typeof(SortCollectionJsonConverter))]
+		IList<KeyValuePair<Field, ISort>> Sort { get; set; }
 
 		[JsonProperty(PropertyName = "highlight")]
 		IHighlight Highlight { get; set; }
@@ -28,6 +29,7 @@ namespace Nest
 		bool? Explain { get; set; }
 
 		[JsonProperty(PropertyName = "_source")]
+		[JsonConverter(typeof(ReadAsTypeJsonConverter<SourceFilter>))]
 		ISourceFilter Source { get; set; }
 
 		[JsonProperty(PropertyName = "version")]
@@ -37,6 +39,7 @@ namespace Nest
 		IList<Field> FielddataFields { get; set; }
 
 		[JsonProperty(PropertyName = "script_fields")]
+		[JsonConverter(typeof (VerbatimDictionaryKeysJsonConverter))]
 		IDictionary<string, IScriptQuery> ScriptFields { get; set; }
 	}
 
@@ -48,7 +51,7 @@ namespace Nest
 
 		public int? Size { get; set; }
 
-		public IList<ISort> Sort { get; set; }
+		public IList<KeyValuePair<Field, ISort>> Sort { get; set; }
 
 		public IHighlight Highlight { get; set; }
 
@@ -64,12 +67,16 @@ namespace Nest
 	}
 
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	public class InnerHitsDescriptor<T> : DescriptorBase<InnerHitsDescriptor<T>, IInnerHits>, IInnerHits where T : class
-	{
+	public class InnerHitsDescriptor<T> : IInnerHits where T : class
+ 	{
+		private IInnerHits Self => this;
+
+		private InnerHitsDescriptor<T> _assign(Action<IInnerHits> assigner) => Fluent.Assign(this, assigner);
+
 		string IInnerHits.Name { get; set; }
 		int? IInnerHits.From { get; set; }
 		int? IInnerHits.Size { get; set; }
-		IList<ISort> IInnerHits.Sort { get; set; }
+		IList<KeyValuePair<Field, ISort>> IInnerHits.Sort { get; set; }
 		IHighlight IInnerHits.Highlight { get; set; }
 		bool? IInnerHits.Explain { get; set; }
 		ISourceFilter IInnerHits.Source { get; set; }
@@ -77,36 +84,37 @@ namespace Nest
 		IList<Field> IInnerHits.FielddataFields { get; set; }
 		IDictionary<string, IScriptQuery> IInnerHits.ScriptFields { get; set; }
 
-		public InnerHitsDescriptor<T> From(int? from) => Assign(a => a.From = from);
+		public InnerHitsDescriptor<T> From(int? from) => _assign(a => a.From = from);
 
-		public InnerHitsDescriptor<T> Size(int? size) => Assign(a => a.Size = size);
+		public InnerHitsDescriptor<T> Size(int? size) => _assign(a => a.Size = size);
 
-		public InnerHitsDescriptor<T> Name(string name) => Assign(a => a.Name = name);
+		public InnerHitsDescriptor<T> Name(string name) => _assign(a => a.Name = name);
 
 		public InnerHitsDescriptor<T> FielddataFields(params string[] fielddataFields) =>
-			Assign(a => a.FielddataFields = fielddataFields?.Select(f => (Field)f).ToListOrNullIfEmpty());
-
+			_assign(a => a.FielddataFields = fielddataFields?.Select(f => (Field) f).ToListOrNullIfEmpty());
+		
 		public InnerHitsDescriptor<T> FielddataFields(params Expression<Func<T, object>>[] fielddataFields) =>
-			Assign(a => a.FielddataFields = fielddataFields?.Select(f => (Field)f).ToListOrNullIfEmpty());
+			_assign(a => a.FielddataFields = fielddataFields?.Select(f => (Field) f).ToListOrNullIfEmpty());
 
-		public InnerHitsDescriptor<T> Explain(bool? explain = true) => Assign(a => a.Explain = explain);
+		public InnerHitsDescriptor<T> Explain(bool? explain = true) => _assign(a => a.Explain = explain);
 
-		public InnerHitsDescriptor<T> Version(bool? version = true) => Assign(a => a.Version = version);
+		public InnerHitsDescriptor<T> Version(bool? version = true) => _assign(a => a.Version = version);
 
-		public InnerHitsDescriptor<T> Sort(Func<SortDescriptor<T>, IPromise<IList<ISort>>> sortSelector) => Assign(a => a.Sort = sortSelector?.Invoke(new SortDescriptor<T>())?.Value);
-
+		public InnerHitsDescriptor<T> Sort(Func<SortDescriptor<T>, SortDescriptor<T>> sortSelector) =>
+			_assign(a => a.Sort = sortSelector?.Invoke(new SortDescriptor<T>()).InternalSortState.ToListOrNullIfEmpty());
+		
 		/// <summary>
 		/// Allow to highlight search results on one or more fields. The implementation uses the either lucene fast-vector-highlighter or highlighter. 
 		/// </summary>
 		public InnerHitsDescriptor<T> Highlight(Func<HighlightDescriptor<T>, IHighlight> highlightSelector) =>
-			Assign(a => a.Highlight = highlightSelector?.Invoke(new HighlightDescriptor<T>()));
-
+			_assign(a => a.Highlight = highlightSelector?.Invoke(new HighlightDescriptor<T>()));
+		
 		//TODO map source of union bool/SourceFileter
-		public InnerHitsDescriptor<T> Source(bool include = true) => Assign(a => a.Source = !include ? SourceFilter.ExcludeAll : null);
+		public InnerHitsDescriptor<T> Source(bool include = true) => _assign(a => a.Source = !include ? SourceFilter.ExcludeAll : null);
 
 		public InnerHitsDescriptor<T> Source(Func<SourceFilterDescriptor<T>, SourceFilterDescriptor<T>> sourceSelector) =>
-			Assign(a => a.Source = sourceSelector?.Invoke(new SourceFilterDescriptor<T>()));
-
+			_assign(a => a.Source = sourceSelector?.Invoke(new SourceFilterDescriptor<T>()));
+		
 		//TODO ScriptFileds needs an encapsulated descriptor
 		public InnerHitsDescriptor<T> ScriptFields(
 				Func<FluentDictionary<string, Func<ScriptQueryDescriptor<T>, ScriptQueryDescriptor<T>>>,
@@ -129,5 +137,5 @@ namespace Nest
 			}
 			return this;
 		}
-	}
+ 	}
 }

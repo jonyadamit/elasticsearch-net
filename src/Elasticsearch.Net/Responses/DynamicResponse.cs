@@ -18,13 +18,19 @@ namespace Elasticsearch.Net
 		IEnumerable<string>, 
 		IDictionary<string, object>
 	{
-		protected readonly IDictionary<string, dynamic> BackingDictionary = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+		protected readonly IDictionary<string, dynamic> dictionary = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
 
 		/// <summary>
 		/// Returns an empty dynamic dictionary.
 		/// </summary>
 		/// <value>A <see cref="DynamicResponse"/> instance.</value>
-		public static DynamicResponse Empty => new DynamicResponse();
+		public static DynamicResponse Empty
+		{
+			get
+			{
+				return new DynamicResponse();
+			}
+		}
 
 		/// <summary>
 		/// Creates a dynamic dictionary from an <see cref="IDictionary{TKey,TValue}"/> instance.
@@ -61,7 +67,7 @@ namespace Elasticsearch.Net
 		/// <param name="binder">Provides information about the object that called the dynamic operation. The binder.Name property provides the name of the member on which the dynamic operation is performed. For example, for the Console.WriteLine(sampleObject.SampleProperty) statement, where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, binder.Name returns "SampleProperty". The binder.IgnoreCase property specifies whether the member name is case-sensitive.</param><param name="result">The result of the get operation. For example, if the method is called for a property, you can assign the property value to <paramref name="result"/>.</param>
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
-			if (!BackingDictionary.TryGetValue(binder.Name, out result))
+			if (!dictionary.TryGetValue(binder.Name, out result))
 			{
 				result = new ElasticsearchDynamicValue(null);
 			}
@@ -75,7 +81,7 @@ namespace Elasticsearch.Net
 		/// <returns>A <see cref="IEnumerable{T}"/> that contains dynamic member names.</returns>
 		public override IEnumerable<string> GetDynamicMemberNames()
 		{
-			return BackingDictionary.Keys;
+			return dictionary.Keys;
 		}
 
 		/// <summary>
@@ -84,7 +90,7 @@ namespace Elasticsearch.Net
 		/// <returns>A <see cref="IEnumerable{T}"/> that contains dynamic member names.</returns>
 		public IEnumerator<string> GetEnumerator()
 		{
-			return BackingDictionary.Keys.GetEnumerator();
+			return dictionary.Keys.GetEnumerator();
 		}
 
 		/// <summary>
@@ -93,7 +99,7 @@ namespace Elasticsearch.Net
 		/// <returns>A <see cref="IEnumerator"/> that contains dynamic member names.</returns>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return BackingDictionary.Keys.GetEnumerator();
+			return dictionary.Keys.GetEnumerator();
 		}
 
 		/// <summary>
@@ -107,7 +113,7 @@ namespace Elasticsearch.Net
 				name = GetNeutralKey(name);
 
 				dynamic member;
-				if (!BackingDictionary.TryGetValue(name, out member))
+				if (!dictionary.TryGetValue(name, out member))
 				{
 					member = new ElasticsearchDynamicValue(null);
 				}
@@ -118,7 +124,7 @@ namespace Elasticsearch.Net
 			{
 				name = GetNeutralKey(name);
 
-				BackingDictionary[name] = value is ElasticsearchDynamicValue ? value : new ElasticsearchDynamicValue(value);
+				dictionary[name] = value is ElasticsearchDynamicValue ? value : new ElasticsearchDynamicValue(value);
 			}
 		}
 
@@ -134,7 +140,7 @@ namespace Elasticsearch.Net
 				return false;
 			}
 
-			return ReferenceEquals(this, other) || Equals(other.BackingDictionary, this.BackingDictionary);
+			return ReferenceEquals(this, other) || Equals(other.dictionary, this.dictionary);
 		}
 
 		/// <summary>
@@ -163,14 +169,17 @@ namespace Elasticsearch.Net
 		/// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.</returns>
 		IEnumerator<KeyValuePair<string, dynamic>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
 		{
-			return this.BackingDictionary.GetEnumerator();
+			return this.dictionary.GetEnumerator();
 		}
 
 		/// <summary>
 		/// Returns a hash code for this <see cref="DynamicResponse"/>.
 		/// </summary>
 		/// <returns> A hash code for this <see cref="DynamicResponse"/>, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-		public override int GetHashCode() => BackingDictionary?.GetHashCode() ?? 0;
+		public override int GetHashCode()
+		{
+			return (dictionary != null ? dictionary.GetHashCode() : 0);
+		}
 
 		/// <summary>
 		/// Adds an element with the provided key and value to the <see cref="DynamicResponse"/>.
@@ -199,14 +208,17 @@ namespace Elasticsearch.Net
 		/// <param name="key">The key to locate in the <see cref="DynamicResponse"/>.</param>
 		public bool ContainsKey(string key)
 		{
-			return this.BackingDictionary.ContainsKey(key);
+			return this.dictionary.ContainsKey(key);
 		}
 
 		/// <summary>
 		/// Gets an <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the <see cref="DynamicResponse"/>.
 		/// </summary>
 		/// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the <see cref="DynamicResponse"/>.</returns>
-		public ICollection<string> Keys => this.BackingDictionary.Keys;
+		public ICollection<string> Keys
+		{
+			get { return this.dictionary.Keys; }
+		}
 
 		/// <summary>
 		/// Gets the value associated with the specified key.
@@ -216,14 +228,16 @@ namespace Elasticsearch.Net
 		/// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value"/> parameter. This parameter is passed uninitialized.</param>
 		public bool TryGetValue(string key, out dynamic value)
 		{
-			if (this.BackingDictionary.TryGetValue(key, out value)) return true;
-			return false;
+			return this.dictionary.TryGetValue(key, out value);
 		}
 
 		/// <summary>
 		/// Removes all items from the <see cref="DynamicResponse"/>.
 		/// </summary>
-		public void Clear() => this.BackingDictionary.Clear();
+		public void Clear()
+		{
+			this.dictionary.Clear();
+		}
 
 		/// <summary>
 		/// Gets the number of elements contained in the <see cref="DynamicResponse"/>.
@@ -231,7 +245,7 @@ namespace Elasticsearch.Net
 		/// <returns>The number of elements contained in the <see cref="DynamicResponse"/>.</returns>
 		public int Count
 		{
-			get { return this.BackingDictionary.Count; }
+			get { return this.dictionary.Count; }
 		}
 
 		/// <summary>
@@ -245,7 +259,7 @@ namespace Elasticsearch.Net
 			var dynamicValueKeyValuePair =
 				GetDynamicKeyValuePair(item);
 
-			return this.BackingDictionary.Contains(dynamicValueKeyValuePair);
+			return this.dictionary.Contains(dynamicValueKeyValuePair);
 		}
 
 		/// <summary>
@@ -255,7 +269,7 @@ namespace Elasticsearch.Net
 		/// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
 		public void CopyTo(KeyValuePair<string, dynamic>[] array, int arrayIndex)
 		{
-			this.BackingDictionary.CopyTo(array, arrayIndex);
+			this.dictionary.CopyTo(array, arrayIndex);
 		}
 
 		/// <summary>
@@ -275,7 +289,7 @@ namespace Elasticsearch.Net
 		public bool Remove(string key)
 		{
 			key = GetNeutralKey(key);
-			return this.BackingDictionary.Remove(key);
+			return this.dictionary.Remove(key);
 		}
 
 		/// <summary>
@@ -288,7 +302,7 @@ namespace Elasticsearch.Net
 			var dynamicValueKeyValuePair =
 				GetDynamicKeyValuePair(item);
 
-			return this.BackingDictionary.Remove(dynamicValueKeyValuePair);
+			return this.dictionary.Remove(dynamicValueKeyValuePair);
 		}
 
 		/// <summary>
@@ -297,7 +311,7 @@ namespace Elasticsearch.Net
 		/// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the <see cref="DynamicResponse"/>.</returns>
 		public ICollection<dynamic> Values
 		{
-			get { return this.BackingDictionary.Values; }
+			get { return this.dictionary.Values; }
 		}
 
 		private static KeyValuePair<string, dynamic> GetDynamicKeyValuePair(KeyValuePair<string, dynamic> item)

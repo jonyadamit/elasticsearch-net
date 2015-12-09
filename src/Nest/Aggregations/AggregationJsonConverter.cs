@@ -8,12 +8,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Nest
 {
-	internal class AggregationJsonConverter<TReadAs> : ReadAsTypeJsonConverter<TReadAs>
-		where TReadAs : class
-	{
-
-	}
-
 	internal class AggregationJsonConverter : JsonConverter
 	{
 		private static Regex _numeric = new Regex(@"^[\d.]+(\.[\d.]+)?$");

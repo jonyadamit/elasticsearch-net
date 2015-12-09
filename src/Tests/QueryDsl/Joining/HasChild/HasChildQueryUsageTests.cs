@@ -48,12 +48,5 @@ namespace Tests.QueryDsl.Joining.HasChild
 				.ScoreMode(ChildScoreMode.Average)
 				.Query(qq=>qq.MatchAll())
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<IHasChildQuery>(a => a.HasChild)
-		{
-			q =>  q.Query = null,
-			q =>  q.Query = ConditionlessQuery,
-			q =>  q.Type = null,
-		};
 	}
 }

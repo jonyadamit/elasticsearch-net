@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	[ContractJsonConverter(typeof(MovingAverageAggregationJsonConverter))]
+	[JsonConverter(typeof(MovingAverageAggregationJsonConverter))]
 	public interface IMovingAverageAggregation : IPipelineAggregation
 	{
 		IMovingAverageModel Model { get; set; }
@@ -56,6 +56,5 @@ namespace Nest
 
 		public MovingAverageAggregationDescriptor Model(Func<MovingAverageModelDescriptor, IMovingAverageModel> modelSelector) =>
 			Assign(a => a.Model = modelSelector?.Invoke(new MovingAverageModelDescriptor()));
-
 	}
 }

@@ -40,12 +40,5 @@ namespace Tests.QueryDsl.Joining.SpanTerm
 				.Field("user")
 				.Value("kimchy")
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<ISpanTermQuery>(a => a.SpanTerm)
-		{
-			q => q.Value = null,
-			q => q.Value = string.Empty,
-			q => q.Field = null,
-		};
 	}
 }

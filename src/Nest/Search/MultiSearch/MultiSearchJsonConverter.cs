@@ -20,19 +20,19 @@ namespace Nest
 		{
 			var request = value as IMultiSearchRequest;
 			if (request == null) return;
-			var settings = serializer.GetConnectionSettings();
-			var elasticsearchSerializer = settings.Serializer;
+			var contract = serializer.ContractResolver as SettingsContractResolver;
+			var elasticsearchSerializer = contract?.ConnectionSettings.Serializer;
 			if (elasticsearchSerializer == null) return;
 
 			if (request.Operations == null) return;
 
 			foreach (var operation in request.Operations.Values)
 			{
-				var indices = (request.Index != null && !request.Index.Equals(operation.Index))
+				var index = (request.Index != null && !request.Index.Equals(operation.Index))
 					? operation.Index
 					: null;
 
-				var types = (request.Type != null && !request.Type.Equals(operation.Type))
+				var type = (request.Type != null && !request.Type.Equals(operation.Type))
 					? operation.Type
 					: null;
 
@@ -42,8 +42,8 @@ namespace Nest
 
 				var header = new
 				{
-					index = (indices as IUrlParameter)?.GetString(settings),
-					type = (types as IUrlParameter)?.GetString(settings),
+					index = index,
+					type = type,
 					search_type = searchType,
 					preference = operation.Preference,
 					routing = operation.Routing,

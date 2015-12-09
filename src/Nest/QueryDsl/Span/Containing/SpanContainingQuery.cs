@@ -19,11 +19,11 @@ namespace Nest
 
 	public class SpanContainingQuery : QueryBase, ISpanContainingQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public ISpanQuery Little { get; set; }
 		public ISpanQuery Big { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.SpanContaining = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.SpanContaining = this;
 		internal static bool IsConditionless(ISpanContainingQuery q)
 		{
 			var exclude = q.Little as IQuery;
@@ -40,7 +40,7 @@ namespace Nest
 		: QueryDescriptorBase<SpanContainingQueryDescriptor<T>, ISpanContainingQuery>
 		, ISpanContainingQuery where T : class
 	{
-		protected override bool Conditionless => SpanContainingQuery.IsConditionless(this);
+		bool IQuery.Conditionless => SpanContainingQuery.IsConditionless(this);
 		ISpanQuery ISpanContainingQuery.Little { get; set; }
 		ISpanQuery ISpanContainingQuery.Big { get; set; }
 

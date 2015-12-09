@@ -18,42 +18,42 @@ namespace Nest
 		/// provided by the get API.
 		/// <para> </para>http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/docs-multi-get.html
 		/// </summary>
-		/// <param name="selector">A descriptor describing which documents should be fetched</param>
-		IMultiGetResponse MultiGet(Func<MultiGetDescriptor, IMultiGetRequest> selector = null);
+		/// <param name="multiGetSelector">A descriptor describing which documents should be fetched</param>
+		IMultiGetResponse MultiGet(Func<MultiGetDescriptor, IMultiGetRequest> multiGetSelector = null);
 
 		/// <inheritdoc/>
-		IMultiGetResponse MultiGet(IMultiGetRequest request);
+		IMultiGetResponse MultiGet(IMultiGetRequest multiGetRequest);
 
 		/// <inheritdoc/>
-		Task<IMultiGetResponse> MultiGetAsync(Func<MultiGetDescriptor, IMultiGetRequest> selector = null);
+		Task<IMultiGetResponse> MultiGetAsync(Func<MultiGetDescriptor, IMultiGetRequest> multiGetSelector = null);
 
 		/// <inheritdoc/>
-		Task<IMultiGetResponse> MultiGetAsync(IMultiGetRequest request);
+		Task<IMultiGetResponse> MultiGetAsync(IMultiGetRequest multiGetRequest);
 	}
 
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IMultiGetResponse MultiGet(Func<MultiGetDescriptor, IMultiGetRequest> selector = null) =>
-			this.MultiGet(selector.InvokeOrDefault(new MultiGetDescriptor()));
+		public IMultiGetResponse MultiGet(Func<MultiGetDescriptor, IMultiGetRequest> multiGetSelector = null) =>
+			this.MultiGet(multiGetSelector.InvokeOrDefault(new MultiGetDescriptor()));
 
 		/// <inheritdoc/>
-		public IMultiGetResponse MultiGet(IMultiGetRequest request) => 
+		public IMultiGetResponse MultiGet(IMultiGetRequest multiRequest) => 
 			this.Dispatcher.Dispatch<IMultiGetRequest, MultiGetRequestParameters, MultiGetResponse>(
-				request,
-				new MultiGetConverter((r, s) => this.DeserializeMultiGetResponse(r, s, CreateCovariantMultiGetConverter(request))),
+				multiRequest,
+				new MultiGetConverter((r, s) => this.DeserializeMultiGetResponse(r, s, CreateCovariantMultiGetConverter(multiRequest))),
 				this.LowLevelDispatch.MgetDispatch<MultiGetResponse>
 			);
 
 		/// <inheritdoc/>
-		public Task<IMultiGetResponse> MultiGetAsync(Func<MultiGetDescriptor, IMultiGetRequest> selector = null) =>
-			this.MultiGetAsync(selector.InvokeOrDefault(new MultiGetDescriptor()));
+		public Task<IMultiGetResponse> MultiGetAsync(Func<MultiGetDescriptor, IMultiGetRequest> multiGetSelector = null) =>
+			this.MultiGetAsync(multiGetSelector.InvokeOrDefault(new MultiGetDescriptor()));
 
 		/// <inheritdoc/>
-		public Task<IMultiGetResponse> MultiGetAsync(IMultiGetRequest request) => 
+		public Task<IMultiGetResponse> MultiGetAsync(IMultiGetRequest multiRequest) => 
 			this.Dispatcher.DispatchAsync<IMultiGetRequest, MultiGetRequestParameters, MultiGetResponse, IMultiGetResponse>(
-				request,
-				new MultiGetConverter((r, s) => this.DeserializeMultiGetResponse(r, s, CreateCovariantMultiGetConverter(request))),
+				multiRequest,
+				new MultiGetConverter((r, s) => this.DeserializeMultiGetResponse(r, s, CreateCovariantMultiGetConverter(multiRequest))),
 				this.LowLevelDispatch.MgetDispatchAsync<MultiGetResponse>
 			);
 		private MultiGetResponse DeserializeMultiGetResponse(IApiCallDetails response, Stream stream, JsonConverter converter)=>

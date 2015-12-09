@@ -15,13 +15,13 @@ namespace Nest
 		IExistsResponse AliasExists(Func<AliasExistsDescriptor, IAliasExistsRequest> selector);
 
 		/// <inheritdoc/>
-		IExistsResponse AliasExists(IAliasExistsRequest request);
+		IExistsResponse AliasExists(IAliasExistsRequest aliasRequest);
 
 		/// <inheritdoc/>
 		Task<IExistsResponse> AliasExistsAsync(Func<AliasExistsDescriptor, IAliasExistsRequest> selector);
 
 		/// <inheritdoc/>
-		Task<IExistsResponse> AliasExistsAsync(IAliasExistsRequest request);
+		Task<IExistsResponse> AliasExistsAsync(IAliasExistsRequest aliasRequest);
 	}
 
 	public partial class ElasticClient
@@ -31,9 +31,9 @@ namespace Nest
 			this.AliasExists(selector?.Invoke(new AliasExistsDescriptor()));
 
 		/// <inheritdoc/>
-		public IExistsResponse AliasExists(IAliasExistsRequest request) => 
+		public IExistsResponse AliasExists(IAliasExistsRequest aliasRequest) => 
 			this.Dispatcher.Dispatch<IAliasExistsRequest, AliasExistsRequestParameters, ExistsResponse>(
-				request,
+				aliasRequest,
 				new AliasExistConverter(DeserializeExistsResponse),
 				(p, d) => this.LowLevelDispatch.IndicesExistsAliasDispatch<ExistsResponse>(p)
 			);
@@ -43,9 +43,9 @@ namespace Nest
 			this.AliasExistsAsync(selector?.Invoke(new AliasExistsDescriptor()));
 
 		/// <inheritdoc/>
-		public Task<IExistsResponse> AliasExistsAsync(IAliasExistsRequest request) => 
+		public Task<IExistsResponse> AliasExistsAsync(IAliasExistsRequest aliasRequest) => 
 			this.Dispatcher.DispatchAsync<IAliasExistsRequest, AliasExistsRequestParameters, ExistsResponse, IExistsResponse>(
-				request,
+				aliasRequest,
 				new AliasExistConverter(DeserializeExistsResponse),
 				(p, d) => this.LowLevelDispatch.IndicesExistsAliasDispatchAsync<ExistsResponse>(p)
 			);

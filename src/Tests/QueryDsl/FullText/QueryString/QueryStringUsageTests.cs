@@ -108,15 +108,5 @@ namespace Tests.QueryDsl.FullText.QueryString
 				.Locale("en_US")
 				.Timezone("root")
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<IQueryStringQuery>(a => a.QueryString)
-		{
-			q => q.Query = null,
-			q => q.Query = string.Empty,
-			q => {
-				q.Fields = null;
-				q.DefaultField = null;
-			}
-		};
 	}
 }

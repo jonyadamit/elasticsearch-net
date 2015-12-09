@@ -20,9 +20,8 @@ namespace Nest
 		{
 			var request = value as IMultiPercolateRequest;
 			if (request == null) return;
-
-			var settings = serializer.GetConnectionSettings();
-			var elasticsearchSerializer = settings.Serializer;
+			var contract = serializer.ContractResolver as SettingsContractResolver;
+			var elasticsearchSerializer = contract?.ConnectionSettings.Serializer;
 			if (elasticsearchSerializer == null) return;
 			foreach (var percolation in request.Percolations)
 			{

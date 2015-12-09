@@ -9,19 +9,19 @@ namespace Nest
 	public interface ILineStringGeoShape : IGeoShape
 	{
 		[JsonProperty("coordinates")]
-		IEnumerable<GeoCoordinate> Coordinates { get; set; }
+		IEnumerable<IEnumerable<double>> Coordinates { get; set; }
 	}
 
 	public class LineStringGeoShape : GeoShape, ILineStringGeoShape
 	{
 		public LineStringGeoShape() : this(null) { }
 
-		public LineStringGeoShape(IEnumerable<GeoCoordinate> coordinates) 
+		public LineStringGeoShape(IEnumerable<IEnumerable<double>> coordinates) 
 			: base("linestring") 
 		{
-			this.Coordinates = coordinates;
+			this.Coordinates = coordinates ?? new List<List<double>>();
 		}
 
-		public IEnumerable<GeoCoordinate> Coordinates { get; set; }
+		public IEnumerable<IEnumerable<double>> Coordinates { get; set; }
 	}
 }

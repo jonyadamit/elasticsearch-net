@@ -5,8 +5,6 @@ namespace Nest
 	[Serializable]
 	public class DslException : System.Exception
 	{
-		public object Offender { get; set; }
-
 		public DslException(string msg) : base(msg)
 		{
 		}

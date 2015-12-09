@@ -16,13 +16,13 @@ namespace Nest
 		ISnapshotResponse Snapshot(Name repository, Name snapshotName, Func<SnapshotDescriptor, ISnapshotRequest> selector = null);
 
 		/// <inheritdoc/>
-		ISnapshotResponse Snapshot(ISnapshotRequest request);
+		ISnapshotResponse Snapshot(ISnapshotRequest snapshotRequest);
 
 		/// <inheritdoc/>
 		Task<ISnapshotResponse> SnapshotAsync(Name repository, Name snapshotName, Func<SnapshotDescriptor, ISnapshotRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<ISnapshotResponse> SnapshotAsync(ISnapshotRequest request);
+		Task<ISnapshotResponse> SnapshotAsync(ISnapshotRequest snapshotRequest);
 
 	}
 	public partial class ElasticClient
@@ -32,9 +32,9 @@ namespace Nest
 			this.Snapshot(selector.InvokeOrDefault(new SnapshotDescriptor(repository, snapshotName)));
 
 		/// <inheritdoc/>
-		public ISnapshotResponse Snapshot(ISnapshotRequest request) => 
+		public ISnapshotResponse Snapshot(ISnapshotRequest snapshotRequest) => 
 			this.Dispatcher.Dispatch<ISnapshotRequest, SnapshotRequestParameters, SnapshotResponse>(
-				request,
+				snapshotRequest,
 				this.LowLevelDispatch.SnapshotCreateDispatch<SnapshotResponse>
 			);
 
@@ -43,9 +43,9 @@ namespace Nest
 			this.SnapshotAsync(selector.InvokeOrDefault(new SnapshotDescriptor(repository, snapshotName)));
 
 		/// <inheritdoc/>
-		public Task<ISnapshotResponse> SnapshotAsync(ISnapshotRequest request) => 
+		public Task<ISnapshotResponse> SnapshotAsync(ISnapshotRequest snapshotRequest) => 
 			this.Dispatcher.DispatchAsync<ISnapshotRequest, SnapshotRequestParameters, SnapshotResponse, ISnapshotResponse>(
-				request,
+				snapshotRequest,
 				this.LowLevelDispatch.SnapshotCreateDispatchAsync<SnapshotResponse>
 			);
 	}

@@ -18,10 +18,10 @@ namespace Nest
 
 	public class GeoShapeLineStringQuery : FieldNameQueryBase, IGeoShapeLineStringQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public ILineStringGeoShape Shape { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.GeoShape = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.GeoShape = this;
 		internal static bool IsConditionless(IGeoShapeLineStringQuery q) => q.Field.IsConditionless() || q.Shape == null || !q.Shape.Coordinates.HasAny();
 	}
 
@@ -29,10 +29,10 @@ namespace Nest
 		: FieldNameQueryDescriptorBase<GeoShapeLineStringQueryDescriptor<T>, IGeoShapeLineStringQuery, T>
 		, IGeoShapeLineStringQuery where T : class
 	{
-		protected override bool Conditionless => GeoShapeLineStringQuery.IsConditionless(this);
+		bool IQuery.Conditionless => GeoShapeLineStringQuery.IsConditionless(this);
 		ILineStringGeoShape IGeoShapeLineStringQuery.Shape { get; set; }
 
-		public GeoShapeLineStringQueryDescriptor<T> Coordinates(IEnumerable<GeoCoordinate> coordinates) => Assign(a =>
+		public GeoShapeLineStringQueryDescriptor<T> Coordinates(IEnumerable<IEnumerable<double>> coordinates) => Assign(a =>
 		{
 			a.Shape = a.Shape ?? new LineStringGeoShape();
 			a.Shape.Coordinates = coordinates;

@@ -19,8 +19,10 @@ namespace Nest
 				writer.WriteNull();
 				return;
 			}
-			var settings = serializer.GetConnectionSettings();
-			var s = ((IUrlParameter)marker).GetString(settings);
+			var contract = serializer.ContractResolver as SettingsContractResolver;
+			if (contract?.ConnectionSettings == null)
+				throw new Exception("If you use a custom contract resolver be sure to subclass from ElasticResolver");
+			var s = ((IUrlParameter)marker).GetString(contract.ConnectionSettings);
 			writer.WriteValue(s);
 		}
 

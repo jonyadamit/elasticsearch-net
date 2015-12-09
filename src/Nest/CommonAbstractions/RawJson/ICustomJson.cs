@@ -10,4 +10,10 @@ namespace Nest
 	{
 		object GetCustomJson();
 	}
+
+	/// <summary>
+	/// Any object that implements this interface will automatically have all 
+	/// JsonProperties of all of its implementing interfaces discovered.
+	/// </summary>
+	public interface INestSerializable { }
 }

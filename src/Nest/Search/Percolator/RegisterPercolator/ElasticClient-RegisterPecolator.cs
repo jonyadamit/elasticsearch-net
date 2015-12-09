@@ -13,44 +13,44 @@ namespace Nest
 		/// </summary>
 		/// <typeparam name="T">The type to infer the index/type from, will also be used to strongly type the query</typeparam>
 		/// <param name="name">The name for the percolator</param>
-		/// <param name="selector">An optional descriptor describing the register percolator operation further</param>
-		IRegisterPercolateResponse RegisterPercolator<T>(Name name, Func<RegisterPercolatorDescriptor<T>, IRegisterPercolatorRequest> selector)
+		/// <param name="percolatorSelector">An optional descriptor describing the register percolator operation further</param>
+		IRegisterPercolateResponse RegisterPercolator<T>(Name name, Func<RegisterPercolatorDescriptor<T>, IRegisterPercolatorRequest> percolatorSelector)
 			where T : class;
 
 		/// <inheritdoc/>
-		IRegisterPercolateResponse RegisterPercolator(IRegisterPercolatorRequest request);
+		IRegisterPercolateResponse RegisterPercolator(IRegisterPercolatorRequest registerPercolatorRequest);
 
 		/// <inheritdoc/>
-		Task<IRegisterPercolateResponse> RegisterPercolatorAsync<T>(Name name, Func<RegisterPercolatorDescriptor<T>, IRegisterPercolatorRequest> selector)
+		Task<IRegisterPercolateResponse> RegisterPercolatorAsync<T>(Name name, Func<RegisterPercolatorDescriptor<T>, IRegisterPercolatorRequest> percolatorSelector)
 			where T : class;
 
 		/// <inheritdoc/>
-		Task<IRegisterPercolateResponse> RegisterPercolatorAsync(IRegisterPercolatorRequest request);
+		Task<IRegisterPercolateResponse> RegisterPercolatorAsync(IRegisterPercolatorRequest registerPercolatorRequest);
 	}
 
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IRegisterPercolateResponse RegisterPercolator<T>(Name name, Func<RegisterPercolatorDescriptor<T>, IRegisterPercolatorRequest> selector)
+		public IRegisterPercolateResponse RegisterPercolator<T>(Name name, Func<RegisterPercolatorDescriptor<T>, IRegisterPercolatorRequest> percolatorSelector)
 			where T : class =>
-			this.RegisterPercolator(selector.InvokeOrDefault(new RegisterPercolatorDescriptor<T>(name)));
+			this.RegisterPercolator(percolatorSelector.InvokeOrDefault(new RegisterPercolatorDescriptor<T>(name)));
 
 		/// <inheritdoc/>
-		public IRegisterPercolateResponse RegisterPercolator(IRegisterPercolatorRequest request) => 
+		public IRegisterPercolateResponse RegisterPercolator(IRegisterPercolatorRequest registerPercolatorRequest) => 
 			this.Dispatcher.Dispatch<IRegisterPercolatorRequest, IndexRequestParameters, RegisterPercolateResponse>(
-				request,
+				registerPercolatorRequest,
 				this.LowLevelDispatch.IndexDispatch<RegisterPercolateResponse>
 			);
 
 		/// <inheritdoc/>
-		public Task<IRegisterPercolateResponse> RegisterPercolatorAsync<T>(Name name, Func<RegisterPercolatorDescriptor<T>, IRegisterPercolatorRequest> selector)
+		public Task<IRegisterPercolateResponse> RegisterPercolatorAsync<T>(Name name, Func<RegisterPercolatorDescriptor<T>, IRegisterPercolatorRequest> percolatorSelector)
 			where T : class => 
-			this.RegisterPercolatorAsync(selector.InvokeOrDefault(new RegisterPercolatorDescriptor<T>(name)));
+			this.RegisterPercolatorAsync(percolatorSelector.InvokeOrDefault(new RegisterPercolatorDescriptor<T>(name)));
 
 		/// <inheritdoc/>
-		public Task<IRegisterPercolateResponse> RegisterPercolatorAsync(IRegisterPercolatorRequest request) => 
+		public Task<IRegisterPercolateResponse> RegisterPercolatorAsync(IRegisterPercolatorRequest registerPercolatorRequest) => 
 			this.Dispatcher.DispatchAsync<IRegisterPercolatorRequest, IndexRequestParameters, RegisterPercolateResponse, IRegisterPercolateResponse>(
-				request,
+				registerPercolatorRequest,
 				this.LowLevelDispatch.IndexDispatchAsync<RegisterPercolateResponse>
 			);
 	}

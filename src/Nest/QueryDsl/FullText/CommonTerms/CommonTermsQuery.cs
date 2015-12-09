@@ -38,7 +38,7 @@ namespace Nest
 
 	public class CommonTermsQuery : FieldNameQueryBase, ICommonTermsQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public string Query { get; set; }
 		public double? CutoffFrequency { get; set; }
 		public Operator? LowFrequencyOperator { get; set; }
@@ -47,7 +47,7 @@ namespace Nest
 		public string Analyzer { get; set; }
 		public bool? DisableCoord { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.CommonTerms = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.CommonTerms = this;
 		internal static bool IsConditionless(ICommonTermsQuery q) => q.Field.IsConditionless() || q.Query.IsNullOrEmpty();
 	}
 
@@ -57,7 +57,7 @@ namespace Nest
 		where T : class
 	{
 		string IQuery.Name { get; set; }
-		protected override bool Conditionless => CommonTermsQuery.IsConditionless(this);
+		bool IQuery.Conditionless => CommonTermsQuery.IsConditionless(this);
 		string ICommonTermsQuery.Query { get; set; }
 		Field IFieldNameQuery.Field { get; set; }
 		double? ICommonTermsQuery.CutoffFrequency { get; set; }

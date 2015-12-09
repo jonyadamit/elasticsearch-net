@@ -16,21 +16,21 @@ namespace Nest
 		IRestoreResponse Restore(Name repository, Name snapshotName, Func<RestoreDescriptor, IRestoreRequest> selector = null);
 
 		/// <inheritdoc/>
-		IRestoreResponse Restore(IRestoreRequest request);
+		IRestoreResponse Restore(IRestoreRequest restoreRequest);
 
 		/// <inheritdoc/>
 		Task<IRestoreResponse> RestoreAsync(Name repository, Name snapshotName, Func<RestoreDescriptor, IRestoreRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<IRestoreResponse> RestoreAsync(IRestoreRequest request);
+		Task<IRestoreResponse> RestoreAsync(IRestoreRequest restoreRequest);
 	}
 
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IRestoreResponse Restore(IRestoreRequest request) => 
+		public IRestoreResponse Restore(IRestoreRequest restoreRequest) => 
 			this.Dispatcher.Dispatch<IRestoreRequest, RestoreRequestParameters, RestoreResponse>(
-				request,
+				restoreRequest,
 				this.LowLevelDispatch.SnapshotRestoreDispatch<RestoreResponse>
 			);
 
@@ -39,9 +39,9 @@ namespace Nest
 			this.Restore(selector.InvokeOrDefault(new RestoreDescriptor(repository, snapshotName)));
 
 		/// <inheritdoc/>
-		public Task<IRestoreResponse> RestoreAsync(IRestoreRequest request) => 
+		public Task<IRestoreResponse> RestoreAsync(IRestoreRequest restoreRequest) => 
 			this.Dispatcher.DispatchAsync<IRestoreRequest, RestoreRequestParameters, RestoreResponse, IRestoreResponse>(
-				request,
+				restoreRequest,
 				(p, d) => this.LowLevelDispatch.SnapshotRestoreDispatchAsync<RestoreResponse>(p, d)
 			);
 

@@ -6,7 +6,6 @@ using System.Linq;
 using Elasticsearch.Net.ConnectionPool;
 using Elasticsearch.Net.Serialization;
 using Elasticsearch.Net.Connection.Security;
-using Elasticsearch.Net.Extensions;
 
 namespace Elasticsearch.Net.Connection
 {
@@ -285,7 +284,7 @@ namespace Elasticsearch.Net.Connection
 		/// </summary>
 		public T SetProxy(Uri proxyAdress, string username, string password)
 		{
-			proxyAdress.ThrowIfNull(nameof(proxyAdress));
+			proxyAdress.ThrowIfNull("proxyAdress");
 			this._proxyAddress = proxyAdress.ToString();
 			this._proxyUsername = username;
 			this._proxyPassword = password;

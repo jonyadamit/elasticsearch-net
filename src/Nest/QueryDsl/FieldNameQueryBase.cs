@@ -12,6 +12,7 @@ namespace Nest
 
 	public abstract class FieldNameQueryBase : QueryBase, IFieldNameQuery
 	{
+		public virtual bool Conditionless => false;
 		public Field Field { get; set; }
 	}
 }

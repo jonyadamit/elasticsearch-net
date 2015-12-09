@@ -2,8 +2,8 @@
 ----
 await GET("/")
 				.Fluent(c => c.RootNodeInfo())
-				.Request(c => c.RootNodeInfo(new RootNodeInfoRequest()))
+				.Request(c => c.RootNodeInfo(new InfoRequest()))
 				.FluentAsync(c => c.RootNodeInfoAsync())
-				.RequestAsync(c => c.RootNodeInfoAsync(new RootNodeInfoRequest()))
+				.RequestAsync(c => c.RootNodeInfoAsync(new InfoRequest()))
 				;
 ----

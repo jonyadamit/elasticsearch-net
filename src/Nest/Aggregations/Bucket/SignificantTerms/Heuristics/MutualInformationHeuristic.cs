@@ -4,7 +4,7 @@ namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
 	[JsonConverter(typeof(ReadAsTypeJsonConverter<MutualInformationHeuristic>))]
-	public interface IMutualInformationHeuristic 
+	public interface IMutualInformationHeuristic : INestSerializable
 	{
 		[JsonProperty("include_negatives")]
 		bool? IncludeNegatives { get; set; }

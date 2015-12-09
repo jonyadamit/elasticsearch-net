@@ -31,7 +31,7 @@ namespace Nest
 	
 	public class HasChildQuery : QueryBase, IHasChildQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public TypeName Type { get; set; }
 		public ChildScoreMode? ScoreMode { get; set; }
 		public int? MinChildren { get; set; }
@@ -39,15 +39,15 @@ namespace Nest
 		public QueryContainer Query { get; set; }
 		public IInnerHits InnerHits { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.HasChild = this;
-		internal static bool IsConditionless(IHasChildQuery q) => q.Query == null || q.Query.IsConditionless || q.Type == null;
+		protected override void WrapInContainer(IQueryContainer c) => c.HasChild = this;
+		internal static bool IsConditionless(IHasChildQuery q) => q.Query == null || q.Query.IsConditionless;
 	}
 
 	public class HasChildQueryDescriptor<T> 
 		: QueryDescriptorBase<HasChildQueryDescriptor<T>, IHasChildQuery>
 		, IHasChildQuery where T : class
 	{
-		protected override bool Conditionless => HasChildQuery.IsConditionless(this);
+		bool IQuery.Conditionless => HasChildQuery.IsConditionless(this);
 		TypeName IHasChildQuery.Type { get; set; }
 		ChildScoreMode? IHasChildQuery.ScoreMode { get; set; }
 		int? IHasChildQuery.MinChildren { get; set; }
@@ -61,7 +61,7 @@ namespace Nest
 		}
 
 		public HasChildQueryDescriptor<T> Query(Func<QueryContainerDescriptor<T>, QueryContainer> selector) => 
-			Assign(a => a.Query = selector?.InvokeQuery(new QueryContainerDescriptor<T>()));
+			Assign(a => a.Query = selector(new QueryContainerDescriptor<T>()));
 
 		public HasChildQueryDescriptor<T> Type(string type) => Assign(a => a.Type = type);
 

@@ -49,12 +49,5 @@ namespace Tests.QueryDsl.Joining.HasParent
 				.Query(qq=>qq.MatchAll())
 				
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<IHasParentQuery>(a => a.HasParent)
-		{
-			q =>  q.Query = null,
-			q =>  q.Query = ConditionlessQuery,
-			q =>  q.Type = null,
-		};
 	}
 }

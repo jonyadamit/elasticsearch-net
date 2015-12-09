@@ -20,8 +20,11 @@ namespace Nest
 			var t = value as ITermsQuery;
 			if (t == null) return;
 
-			var settings = serializer.GetConnectionSettings();
-			var field = settings.Inferrer.Field(t.Field);
+			string field = null;
+
+			var contract = serializer.ContractResolver as SettingsContractResolver;
+			if (contract != null && contract.ConnectionSettings != null)
+				field = contract.Infer.Field(t.Field);
 
 			writer.WriteStartObject();
 			{
@@ -30,20 +33,20 @@ namespace Nest
 					writer.WritePropertyName(field);
 					serializer.Serialize(writer, t.Terms);
 				}
-				else if (t.TermsLookup != null)
+				else if (t.ExternalField != null)
 				{
 					writer.WritePropertyName(field);
-					serializer.Serialize(writer, t.TermsLookup);
+					serializer.Serialize(writer, t.ExternalField);
 				}
 				if (t.DisableCoord.HasValue)
 				{
 					writer.WritePropertyName("disable_coord");
 					writer.WriteValue(t.DisableCoord.Value);
 				}
-				if (t.MinimumShouldMatch != null)
+				if (!t.MinimumShouldMatch.IsNullOrEmpty())
 				{
 					writer.WritePropertyName("minimum_should_match");
-					serializer.Serialize(writer, t.MinimumShouldMatch);
+					writer.WriteValue(t.MinimumShouldMatch);
 				}
 				if (t.Boost.HasValue)
 				{
@@ -55,6 +58,7 @@ namespace Nest
 					writer.WritePropertyName("_name");
 					writer.WriteValue(t.Name);
 				}
+				
 			}
 			writer.WriteEndObject();
 		}
@@ -76,9 +80,7 @@ namespace Nest
 						f.DisableCoord = reader.Value as bool?;
 						break;
 					case "minimum_should_match":
-						reader.Read();
-						var min = serializer.Deserialize<MinimumShouldMatch>(reader);
-						f.MinimumShouldMatch = min;	
+						f.MinimumShouldMatch = reader.ReadAsString();	
 						break;
 					case "boost":
 						reader.Read();
@@ -90,7 +92,7 @@ namespace Nest
 					default:
 						f.Field = property;
 						//reader.Read();
-						ReadTerms(f, reader, serializer);
+						ReadTerms(f, reader);
 						//reader.Read();
 						break;
 				}
@@ -99,12 +101,12 @@ namespace Nest
 
 		}
 
-		private void ReadTerms(ITermsQuery termsQuery, JsonReader reader, JsonSerializer serializer)
+		private void ReadTerms(ITermsQuery termsQuery, JsonReader reader)
 		{
 			reader.Read();
 			if (reader.TokenType == JsonToken.StartObject)
 			{
-				var ef = new FieldLookup();
+				var ef = new ExternalFieldDeclaration();
 				var depth = reader.Depth;
 				while (reader.Read() && reader.Depth >= depth && reader.Value != null)
 				{
@@ -113,8 +115,7 @@ namespace Nest
 					{
 						case "id":
 							reader.Read();
-							var id = serializer.Deserialize<Id>(reader);
-							ef.Id = id;
+							ef.Id = reader.Value as string;
 							break;
 						case "index":
 							reader.Read();
@@ -130,7 +131,7 @@ namespace Nest
 							break;
 					}
 				}
-				termsQuery.TermsLookup = ef;
+				termsQuery.ExternalField = ef;
 			}
 			else if (reader.TokenType == JsonToken.StartArray)
 			{

@@ -18,13 +18,13 @@ namespace Nest
 		IGetWarmerResponse GetWarmer(Func<GetWarmerDescriptor, IGetWarmerRequest> selector = null);
 
 		/// <inheritdoc/>
-		IGetWarmerResponse GetWarmer(IGetWarmerRequest request);
+		IGetWarmerResponse GetWarmer(IGetWarmerRequest getWarmerRequest);
 
 		/// <inheritdoc/>
 		Task<IGetWarmerResponse> GetWarmerAsync(Func<GetWarmerDescriptor, IGetWarmerRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<IGetWarmerResponse> GetWarmerAsync(IGetWarmerRequest request);
+		Task<IGetWarmerResponse> GetWarmerAsync(IGetWarmerRequest getWarmerRequest);
 
 	}
 
@@ -35,9 +35,9 @@ namespace Nest
 			this.GetWarmer(selector.InvokeOrDefault(new GetWarmerDescriptor()));
 
 		/// <inheritdoc/>
-		public IGetWarmerResponse GetWarmer(IGetWarmerRequest request) => 
+		public IGetWarmerResponse GetWarmer(IGetWarmerRequest getWarmerRequest) => 
 			this.Dispatcher.Dispatch<IGetWarmerRequest, GetWarmerRequestParameters, GetWarmerResponse>(
-				request, 
+				getWarmerRequest, 
 				(p, d) => this.LowLevelDispatch.IndicesGetWarmerDispatch<GetWarmerResponse>(p)
 			);
 
@@ -46,9 +46,9 @@ namespace Nest
 			this.GetWarmerAsync(selector.InvokeOrDefault(new GetWarmerDescriptor()));
 
 		/// <inheritdoc/>
-		public Task<IGetWarmerResponse> GetWarmerAsync(IGetWarmerRequest request) => 
+		public Task<IGetWarmerResponse> GetWarmerAsync(IGetWarmerRequest getWarmerRequest) => 
 			this.Dispatcher.DispatchAsync<IGetWarmerRequest, GetWarmerRequestParameters, GetWarmerResponse, IGetWarmerResponse>(
-				request, (p, d) => this.LowLevelDispatch.IndicesGetWarmerDispatchAsync<GetWarmerResponse>(p)
+				getWarmerRequest, (p, d) => this.LowLevelDispatch.IndicesGetWarmerDispatchAsync<GetWarmerResponse>(p)
 			);
 	}
 }

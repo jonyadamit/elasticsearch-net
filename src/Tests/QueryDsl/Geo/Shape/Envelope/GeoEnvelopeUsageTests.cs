@@ -12,7 +12,7 @@ namespace Tests.QueryDsl.Geo.Shape.Envelope
 	{
 		public GeoEnvelopeUsageTests(ReadOnlyCluster i, EndpointUsage usage) : base(i, usage) { }
 
-		private readonly IEnumerable<GeoCoordinate> _coordinates = new GeoCoordinate[]
+		private readonly IEnumerable<IEnumerable<double>> _coordinates = new[]
 		{
 			new [] { -45.0, 45.0 },
 			new [] { 45.0, -45.0 }
@@ -39,12 +39,5 @@ namespace Tests.QueryDsl.Geo.Shape.Envelope
 				.Field(p=>p.Location)
 				.Coordinates(this._coordinates)
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<IGeoShapeEnvelopeQuery>(a => a.GeoShape as IGeoShapeEnvelopeQuery)
-		{
-			q =>  q.Field = null,
-			q =>  q.Shape = null,
-			q =>  q.Shape.Coordinates = null,
-		};
 	}
 }

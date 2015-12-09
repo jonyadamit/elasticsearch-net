@@ -78,12 +78,5 @@ namespace Tests.QueryDsl.FullText.MultiMatch
 				.ZeroTermsQuery(ZeroTermsQuery.All)
 				.Name("named_query")
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<IMultiMatchQuery>(a => a.MultiMatch)
-		{
-			q => q.Query = null,
-			q => q.Query = string.Empty,
-			q => q.Fields = null
-		};
 	}
 }

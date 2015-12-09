@@ -9,42 +9,42 @@ namespace Nest
 	{
 		/// <summary>
 		/// The cluster state API allows to get a comprehensive state information of the whole cluster.
-		/// <para> </para><a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-state.html">http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-state.html</a>
+		/// <para> </para>http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-state.html
 		/// </summary>
-		/// <param name="selector">A descriptor that describes the parameters for the cluster state operation</param>
-		IClusterStateResponse ClusterState(Func<ClusterStateDescriptor, IClusterStateRequest> selector = null);
+		/// <param name="clusterStateSelector">A descriptor that describes the parameters for the cluster state operation</param>
+		IClusterStateResponse ClusterState(Func<ClusterStateDescriptor, IClusterStateRequest> clusterStateSelector = null);
 
 		/// <inheritdoc/>
-		IClusterStateResponse ClusterState(IClusterStateRequest request);
+		IClusterStateResponse ClusterState(IClusterStateRequest clusterStateRequest);
 
 		/// <inheritdoc/>
-		Task<IClusterStateResponse> ClusterStateAsync(Func<ClusterStateDescriptor, IClusterStateRequest> selector = null);
+		Task<IClusterStateResponse> ClusterStateAsync(Func<ClusterStateDescriptor, IClusterStateRequest> clusterStateSelector = null);
 
 		/// <inheritdoc/>
-		Task<IClusterStateResponse> ClusterStateAsync(IClusterStateRequest request);
+		Task<IClusterStateResponse> ClusterStateAsync(IClusterStateRequest clusterStateRequest);
 	}
 
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IClusterStateResponse ClusterState(Func<ClusterStateDescriptor, IClusterStateRequest> selector = null) =>
-			this.ClusterState(selector.InvokeOrDefault(new ClusterStateDescriptor()));
+		public IClusterStateResponse ClusterState(Func<ClusterStateDescriptor, IClusterStateRequest> clusterStateSelector = null) =>
+			this.ClusterState(clusterStateSelector.InvokeOrDefault(new ClusterStateDescriptor()));
 
 		/// <inheritdoc/>
-		public IClusterStateResponse ClusterState(IClusterStateRequest request) => 
+		public IClusterStateResponse ClusterState(IClusterStateRequest clusterStateRequest) => 
 			this.Dispatcher.Dispatch<IClusterStateRequest, ClusterStateRequestParameters, ClusterStateResponse>(
-				request,
+				clusterStateRequest,
 				(p, d) => this.LowLevelDispatch.ClusterStateDispatch<ClusterStateResponse>(p)
 			);
 
 		/// <inheritdoc/>
-		public Task<IClusterStateResponse> ClusterStateAsync(Func<ClusterStateDescriptor, IClusterStateRequest> selector = null) =>
-			this.ClusterStateAsync(selector.InvokeOrDefault(new ClusterStateDescriptor()));
+		public Task<IClusterStateResponse> ClusterStateAsync(Func<ClusterStateDescriptor, IClusterStateRequest> clusterStateSelector = null) =>
+			this.ClusterStateAsync(clusterStateSelector.InvokeOrDefault(new ClusterStateDescriptor()));
 
 		/// <inheritdoc/>
-		public Task<IClusterStateResponse> ClusterStateAsync(IClusterStateRequest request) => 
+		public Task<IClusterStateResponse> ClusterStateAsync(IClusterStateRequest clusterStateRequest) => 
 			this.Dispatcher.DispatchAsync<IClusterStateRequest, ClusterStateRequestParameters, ClusterStateResponse, IClusterStateResponse>(
-				request,
+				clusterStateRequest,
 				(p, d) => this.LowLevelDispatch.ClusterStateDispatchAsync<ClusterStateResponse>(p)
 			);
 	}

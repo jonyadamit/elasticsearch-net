@@ -7,7 +7,7 @@ using System.Text;
 namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	[ContractJsonConverter(typeof(AggregationJsonConverter<GeoBoundsAggregation>))]
+	[JsonConverter(typeof(ReadAsTypeJsonConverter<GeoBoundsAggregation>))]
 	public interface IGeoBoundsAggregation : IMetricAggregation
 	{
 		[JsonProperty("wrap_longitude")]

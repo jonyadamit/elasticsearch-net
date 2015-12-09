@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Elasticsearch.Net.Connection;
 using Elasticsearch.Net.Connection.Configuration;
-using Elasticsearch.Net.Extensions;
 using static Elasticsearch.Net.HttpMethod;
 
 ///Generated File Please Do Not Edit Manually

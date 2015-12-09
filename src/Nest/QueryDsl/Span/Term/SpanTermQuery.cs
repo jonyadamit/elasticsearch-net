@@ -13,10 +13,10 @@ namespace Nest
 	
 	public class SpanTermQuery : FieldNameQueryBase, ISpanTermQuery
 	{
-		protected override bool Conditionless => TermQuery.IsConditionless(this);
+		bool IQuery.Conditionless => TermQuery.IsConditionless(this);
 		public object Value { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.SpanTerm = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.SpanTerm = this;
 	}
 
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]

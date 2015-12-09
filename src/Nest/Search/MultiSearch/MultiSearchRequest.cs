@@ -30,8 +30,8 @@ namespace Nest
 
 		public MultiSearchDescriptor Search<T>(string name, Func<SearchDescriptor<T>, SearchDescriptor<T>> searchSelector) where T : class
 		{
-			name.ThrowIfNull(nameof(name));
-			searchSelector.ThrowIfNull(nameof(searchSelector));
+			name.ThrowIfNull("name");
+			searchSelector.ThrowIfNull("searchSelector");
 			var descriptor = searchSelector(new SearchDescriptor<T>());
 			if (descriptor == null)
 				return this;

@@ -28,7 +28,7 @@ namespace Nest
 	{
 		public ObjectProperty() : base("object") { }
 
-		protected ObjectProperty(string type) : base(type) { }
+		protected ObjectProperty(TypeName typeName) : base(typeName) { }
 
 		public DynamicMapping? Dynamic { get; set; }
 		public bool? Enabled { get; set; }
@@ -61,7 +61,7 @@ namespace Nest
 
 		public ObjectPropertyDescriptorBase() : this("object") { }
 
-		protected ObjectPropertyDescriptorBase(string type) : base(type)
+		public ObjectPropertyDescriptorBase(string type) : base(type)
 		{
 			_TypeName = TypeName.Create<TChild>();
 		}
@@ -84,14 +84,12 @@ namespace Nest
 		public TDescriptor Properties(Func<PropertiesDescriptor<TChild>, IPromise<IProperties>> selector) =>
 			Assign(a => a.Properties = selector?.Invoke(new PropertiesDescriptor<TChild>(a.Properties))?.Value);
 
-		public TDescriptor AutoMap(IPropertyVisitor visitor = null, int maxRecursion = 0) => Assign(a =>
+		public TDescriptor AutoMap(IPropertyVisitor visitor = null) => Assign(a =>
 		{
 			a.Properties = a.Properties ?? new Properties();
-			var autoProperties = new PropertyWalker(typeof(TChild), visitor, maxRecursion).GetProperties();
+			var autoProperties = new PropertyWalker(typeof(TChild), visitor).GetProperties();
 			foreach (var autoProperty in autoProperties)
-				a.Properties[autoProperty.Key] = autoProperty.Value;
+				a.Properties[autoProperty] = autoProperty.Value;
 		});
-
-		public TDescriptor AutoMap(int maxRecursion) => AutoMap(null, maxRecursion);
 	}
 }

@@ -12,16 +12,16 @@ namespace Nest
 		/// (applied cross restarts) or transient (will not survive a full cluster restart). 
 		/// <para> </para>http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/cluster-update-settings.html
 		/// </summary>
-		IClusterPutSettingsResponse ClusterPutSettings(Func<ClusterPutSettingsDescriptor, IClusterPutSettingsRequest> selector);
+		IClusterPutSettingsResponse ClusterPutSettings(Func<ClusterPutSettingsDescriptor, IClusterPutSettingsRequest> clusterHealthSelector);
 
 		/// <inheritdoc/>
-		Task<IClusterPutSettingsResponse> ClusterPutSettingsAsync(Func<ClusterPutSettingsDescriptor, IClusterPutSettingsRequest> selector);
+		Task<IClusterPutSettingsResponse> ClusterPutSettingsAsync(Func<ClusterPutSettingsDescriptor, IClusterPutSettingsRequest> clusterHealthSelector);
 
 		/// <inheritdoc/>
-		IClusterPutSettingsResponse ClusterPutSettings(IClusterPutSettingsRequest request);
+		IClusterPutSettingsResponse ClusterPutSettings(IClusterPutSettingsRequest clusterSettingsRequest);
 
 		/// <inheritdoc/>
-		Task<IClusterPutSettingsResponse> ClusterPutSettingsAsync(IClusterPutSettingsRequest request);
+		Task<IClusterPutSettingsResponse> ClusterPutSettingsAsync(IClusterPutSettingsRequest clusterSettingsRequest);
 	}
 	public partial class ElasticClient
 	{
@@ -34,16 +34,16 @@ namespace Nest
 			this.ClusterPutSettingsAsync(selector.InvokeOrDefault(new ClusterPutSettingsDescriptor()));
 
 		/// <inheritdoc/>
-		public IClusterPutSettingsResponse ClusterPutSettings(IClusterPutSettingsRequest request) => 
+		public IClusterPutSettingsResponse ClusterPutSettings(IClusterPutSettingsRequest clusterSettingsRequest) => 
 			this.Dispatcher.Dispatch<IClusterPutSettingsRequest, ClusterPutSettingsRequestParameters, ClusterPutSettingsResponse>(
-				request,
+				clusterSettingsRequest,
 				this.LowLevelDispatch.ClusterPutSettingsDispatch<ClusterPutSettingsResponse>
 			);
 
 		/// <inheritdoc/>
-		public Task<IClusterPutSettingsResponse> ClusterPutSettingsAsync(IClusterPutSettingsRequest request) => 
+		public Task<IClusterPutSettingsResponse> ClusterPutSettingsAsync(IClusterPutSettingsRequest clusterSettingsRequest) => 
 			this.Dispatcher.DispatchAsync<IClusterPutSettingsRequest, ClusterPutSettingsRequestParameters, ClusterPutSettingsResponse, IClusterPutSettingsResponse>(
-				request,
+				clusterSettingsRequest,
 				this.LowLevelDispatch.ClusterPutSettingsDispatchAsync<ClusterPutSettingsResponse>
 			);
 	}

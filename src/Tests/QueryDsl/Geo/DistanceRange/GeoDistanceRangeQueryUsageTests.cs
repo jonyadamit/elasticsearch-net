@@ -15,12 +15,12 @@ namespace Tests.QueryDsl.Geo.DistanceRange
 		{
 			geo_distance_range = new
 			{
-				gt = "200.0km",
-				gte = "200.0km",
-				lt = "400.0mi",
-				lte = "400.0mi",
+				from = "200.0km",
+				to = "400.0mi",
 				distance_type = "arc",
 				optimize_bbox = "indexed",
+				include_lower = false,
+				include_upper = false,
 				coerce = true,
 				ignore_malformed = true,
 				validation_method = "strict",
@@ -41,13 +41,13 @@ namespace Tests.QueryDsl.Geo.DistanceRange
 			Field = Static.Field<Project>(p=>p.Location),
 			DistanceType = GeoDistanceType.Arc,
 			Coerce = true,
-			GreaterThanOrEqualTo = GeoDistance.Kilometers(200),
+			From = GeoDistance.Kilometers(200),
 			IgnoreMalformed = true,
-			GreaterThan = GeoDistance.Kilometers(200),
-			LessThan = GeoDistance.Miles(400),
+			IncludeLower = false,
+			IncludeUpper = false,
 			Location = new GeoLocation(40, -70),
 			OptimizeBoundingBox = GeoOptimizeBBox.Indexed,
-			LessThanOrEqualTo = GeoDistance.Miles(400),
+			To = GeoDistance.Miles(400),
 			ValidationMethod = GeoValidationMethod.Strict
 		};
 
@@ -58,26 +58,14 @@ namespace Tests.QueryDsl.Geo.DistanceRange
 				.Field(p=>p.Location)
 				.DistanceType(GeoDistanceType.Arc)
 				.Coerce()
-				.GreaterThanOrEqualTo(200, GeoPrecision.Kilometers)
-				.GreaterThan(200, GeoPrecision.Kilometers)
+				.From(200, GeoPrecision.Kilometers)
 				.IgnoreMalformed()
+				.FromExclusive()
+				.ToExclusive()
 				.Location(new GeoLocation(40, -70))
 				.Optimize(GeoOptimizeBBox.Indexed)
-				.LessThanOrEqualTo(GeoDistance.Miles(400))
-				.LessThan(GeoDistance.Miles(400))
+				.To(GeoDistance.Miles(400))
 				.ValidationMethod(GeoValidationMethod.Strict)
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<IGeoDistanceRangeQuery>(a => a.GeoDistanceRange)
-		{
-			q => {
-				q.LessThanOrEqualTo = null;
-				q.LessThan = null;
-				q.GreaterThanOrEqualTo = null;
-				q.GreaterThan = null;
-			},
-			q =>  q.Field = null,
-			q =>  q.Location = null
-		};
 	}
 }

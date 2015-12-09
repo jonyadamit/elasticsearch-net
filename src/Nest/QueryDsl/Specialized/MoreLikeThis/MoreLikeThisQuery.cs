@@ -58,7 +58,7 @@ namespace Nest
 
 	public class MoreLikeThisQuery : QueryBase, IMoreLikeThisQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public Fields Fields { get; set; }
 		public double? TermMatchPercentage { get; set; }
 		public MinimumShouldMatch MinimumShouldMatch { get; set; }
@@ -75,15 +75,15 @@ namespace Nest
 		public IEnumerable<Like> Like { get; set; }
 		public IEnumerable<Like> Unlike { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.MoreLikeThis = this;
-		internal static bool IsConditionless(IMoreLikeThisQuery q) => q.Fields.IsConditionless() || (!q.Like.HasAny() || q.Like.All(Nest.Like.IsConditionless));
+		protected override void WrapInContainer(IQueryContainer c) => c.MoreLikeThis = this;
+		internal static bool IsConditionless(IMoreLikeThisQuery q) => !q.Fields.IsConditionless()|| (!q.Like.HasAny() || q.Like.All(Nest.Like.IsConditionless));
 	}
 
 	public class MoreLikeThisQueryDescriptor<T> 
 		: QueryDescriptorBase<MoreLikeThisQueryDescriptor<T>, IMoreLikeThisQuery>
 		, IMoreLikeThisQuery where T : class
 	{
-		protected override bool Conditionless => MoreLikeThisQuery.IsConditionless(this);
+		bool IQuery.Conditionless => MoreLikeThisQuery.IsConditionless(this);
 		Fields IMoreLikeThisQuery.Fields { get; set; }
 		MinimumShouldMatch IMoreLikeThisQuery.MinimumShouldMatch { get; set; }
 		StopWords IMoreLikeThisQuery.StopWords { get; set; }
@@ -111,25 +111,38 @@ namespace Nest
 		public MoreLikeThisQueryDescriptor<T> StopWords(StopWords stopWords) => 
 			Assign(a => a.StopWords = stopWords);
 
-		public MoreLikeThisQueryDescriptor<T> MaxQueryTerms(int? maxQueryTerms) => Assign(a => a.MaxQueryTerms = maxQueryTerms);
+		public MoreLikeThisQueryDescriptor<T> MaxQueryTerms(int maxQueryTerms) => 
+			Assign(a => a.MaxQueryTerms = maxQueryTerms);
 
-		public MoreLikeThisQueryDescriptor<T> MinTermFrequency(int? minTermFrequency) => Assign(a => a.MinTermFrequency = minTermFrequency);
+		public MoreLikeThisQueryDescriptor<T> MinTermFrequency(int minTermFrequency) => 
+			Assign(a => a.MinTermFrequency = minTermFrequency);
 
-		public MoreLikeThisQueryDescriptor<T> MinDocumentFrequency(int? minDocumentFrequency) => Assign(a => a.MinDocumentFrequency = minDocumentFrequency);
+		public MoreLikeThisQueryDescriptor<T> MinDocumentFrequency(int minDocumentFrequency) =>
+			Assign(a => a.MinDocumentFrequency = minDocumentFrequency);
 
-		public MoreLikeThisQueryDescriptor<T> MaxDocumentFrequency(int? maxDocumentFrequency) => Assign(a => a.MaxDocumentFrequency = maxDocumentFrequency);
+		public MoreLikeThisQueryDescriptor<T> MaxDocumentFrequency(int maxDocumentFrequency) =>
+			Assign(a => a.MaxDocumentFrequency = maxDocumentFrequency);
 
-		public MoreLikeThisQueryDescriptor<T> MinWordLength(int? minWordLength) => Assign(a => a.MinWordLength = minWordLength);
+		public MoreLikeThisQueryDescriptor<T> MinWordLength(int minWordLength) => 
+			Assign(a => a.MinWordLength = minWordLength);
 
-		public MoreLikeThisQueryDescriptor<T> MaxWordLength(int? maxWordLength) => Assign(a => a.MaxWordLength = maxWordLength);
+		public MoreLikeThisQueryDescriptor<T> MaxWordLength(int maxWordLength) =>
+			Assign(a => a.MaxWordLength = maxWordLength);
 
-		public MoreLikeThisQueryDescriptor<T> BoostTerms(double? boostTerms) => Assign(a => a.BoostTerms = boostTerms);
+		public MoreLikeThisQueryDescriptor<T> BoostTerms(double? boostTerms) =>
+			Assign(a => a.BoostTerms = boostTerms);
 
-		public MoreLikeThisQueryDescriptor<T> MinimumShouldMatch(MinimumShouldMatch minMatch) => Assign(a => a.MinimumShouldMatch = minMatch);
+		public MoreLikeThisQueryDescriptor<T> MinimumShouldMatch(string minMatch) =>
+			Assign(a => a.MinimumShouldMatch = minMatch);
 
-		public MoreLikeThisQueryDescriptor<T> Include(bool? include = true) => Assign(a => a.Include = include);
+		public MoreLikeThisQueryDescriptor<T> Include(bool? include = true) =>
+			Assign(a => a.Include = include);
 
-		public MoreLikeThisQueryDescriptor<T> Analyzer(string analyzer) => Assign(a => a.Analyzer = analyzer);
+		public MoreLikeThisQueryDescriptor<T> MinimumShouldMatch(int minMatch) =>
+			Assign(a => a.MinimumShouldMatch = minMatch.ToString());
+
+		public MoreLikeThisQueryDescriptor<T> Analyzer(string analyzer) =>
+			Assign(a => a.Analyzer = analyzer);
 
 		public MoreLikeThisQueryDescriptor<T> Like(Func<LikeDescriptor<T>, IPromise<List<Like>>> selector) =>
 			Assign(a => a.Like = selector?.Invoke(new LikeDescriptor<T>())?.Value);

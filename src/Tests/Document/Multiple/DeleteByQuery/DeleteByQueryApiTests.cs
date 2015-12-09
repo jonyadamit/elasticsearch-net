@@ -52,8 +52,7 @@ namespace Tests.Document.Multiple.DeleteByQuery
 			{
 				ids = new
 				{
-					types = new[] { "project" },
-					values = new [] { Project.Projects.First().Name, "x" }
+					 values = new [] { Project.Projects.First().Name, "x" }
 				}
 			}
 		};
@@ -70,7 +69,7 @@ namespace Tests.Document.Multiple.DeleteByQuery
 		protected override Func<DeleteByQueryDescriptor<Project>, IDeleteByQueryRequest> Fluent => d => d
 			.IgnoreUnavailable()
 			.Query(q=>q
-				.Ids(ids=>ids.Types(typeof(Project)).Values(Project.Projects.First().Name, "x"))
+				.Ids(ids=>ids.Values(Project.Projects.First().Name, "x"))
 			);
 			
 		protected override DeleteByQueryRequest Initializer => new DeleteByQueryRequest(this.Indices)
@@ -78,8 +77,7 @@ namespace Tests.Document.Multiple.DeleteByQuery
 			IgnoreUnavailable = true,
 			Query = new IdsQuery
 			{
-				Types = Types.Type<Project>(),
-				Values = new Id[] { Project.Projects.First().Name, "x" }
+				Values = new [] { Project.Projects.First().Name, "x" }
 			}
 		};
 	}

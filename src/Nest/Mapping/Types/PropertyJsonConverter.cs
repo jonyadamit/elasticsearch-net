@@ -18,16 +18,16 @@ namespace Nest
 			throw new NotSupportedException();
 		}
 
-		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+		private IProperty GetTypeFromJObject(JObject po, JsonSerializer serializer)
 		{
-			JObject o = JObject.Load(reader);
 			JToken typeToken;
 			JToken propertiesToken;
 			var type = string.Empty;
-			var hasType = o.TryGetValue("type", out typeToken);
+
+			var hasType = po.TryGetValue("type", out typeToken);
 			if (hasType)
 				type = typeToken.Value<string>().ToLowerInvariant();
-			else if (o.TryGetValue("properties", out propertiesToken))
+			else if (po.TryGetValue("properties", out propertiesToken))
 				type = "object";
 
 			serializer.TypeNameHandling = TypeNameHandling.None;
@@ -35,46 +35,50 @@ namespace Nest
 			switch (type)
 			{
 				case "string":
-					return o.ToObject<StringProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(StringProperty)) as StringProperty;
 				case "float":
 				case "double":
 				case "byte":
 				case "short":
 				case "integer":
 				case "long":
-					return o.ToObject<NumberProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(NumberProperty)) as NumberProperty;
 				case "date":
-					return o.ToObject<DateProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(DateProperty)) as DateProperty;
 				case "boolean":
-					return o.ToObject<BooleanProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(BooleanProperty)) as BooleanProperty;
 				case "binary":
-					return o.ToObject<BinaryProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(BinaryProperty)) as BinaryProperty;
 				case "object":
-					return o.ToObject<ObjectProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(ObjectProperty)) as ObjectProperty;
 				case "nested":
-					return o.ToObject<NestedProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(NestedProperty)) as NestedProperty;
 				case "ip":
-					return o.ToObject<IpProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(IpProperty)) as IpProperty;
 				case "geo_point":
-					return o.ToObject<GeoPointProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(GeoPointProperty)) as GeoPointProperty;
 				case "geo_shape":
-					return o.ToObject<GeoShapeProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(GeoShapeProperty)) as GeoShapeProperty;
 				case "attachment":
-					return o.ToObject<AttachmentProperty>();
-				case "completion":
-					return o.ToObject<CompletionProperty>();
-				case "token_count":
-					return o.ToObject<TokenCountProperty>();
-				case "murmur3":
-					return o.ToObject<Murmur3HashProperty>();
+					return serializer.Deserialize(po.CreateReader(), typeof(AttachmentProperty)) as AttachmentProperty;
 			}
 
 			return null;
+		}
+		public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+										JsonSerializer serializer)
+		{
+			JObject o = JObject.Load(reader);
+
+			var esType = this.GetTypeFromJObject(o, serializer);
+			return esType;
 		}
 
 		public override bool CanConvert(Type objectType)
 		{
 			return objectType == typeof(IProperty);
 		}
+
 	}
+	
 }

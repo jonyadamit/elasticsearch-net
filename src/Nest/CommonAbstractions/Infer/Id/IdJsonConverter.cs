@@ -31,10 +31,14 @@ namespace Nest
 			}
 			if (id.Document != null)
 			{
-				var settings = serializer.GetConnectionSettings();
-				var indexName = settings.Inferrer.Id(id.Document.GetType(), id.Document);
-				writer.WriteValue(indexName);
-			}
+				var contract = serializer.ContractResolver as SettingsContractResolver;
+				if (contract != null && contract.ConnectionSettings != null)
+				{
+					var indexName = contract.Infer.Id(id.Document.GetType(), id.Document);
+					writer.WriteValue(indexName);
+				}
+				else throw new Exception("If you use a custom contract resolver be sure to subclass from ElasticResolver");
+            }
 			else writer.WriteValue(id.Value);
 		}
 	}

@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 
 namespace Nest
 {
-	[ContractJsonConverter(typeof(TokenFilterJsonConverter))]
 	public interface ITokenFilter
 	{
 		[JsonProperty("version")]

@@ -15,13 +15,13 @@ namespace Nest
 		IExistsResponse IndexTemplateExists(Name template, Func<IndexTemplateExistsDescriptor, IIndexTemplateExistsRequest> selector = null);
 
 		/// <inheritdoc/>
-		IExistsResponse IndexTemplateExists(IIndexTemplateExistsRequest request);
+		IExistsResponse IndexTemplateExists(IIndexTemplateExistsRequest templateRequest);
 
 		/// <inheritdoc/>
 		Task<IExistsResponse> IndexTemplateExistsAsync(Name template, Func<IndexTemplateExistsDescriptor, IIndexTemplateExistsRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<IExistsResponse> IndexTemplateExistsAsync(IIndexTemplateExistsRequest request);
+		Task<IExistsResponse> IndexTemplateExistsAsync(IIndexTemplateExistsRequest templateRequest);
 
 	}
 
@@ -32,9 +32,9 @@ namespace Nest
 			this.IndexTemplateExists(selector.InvokeOrDefault(new IndexTemplateExistsDescriptor(template)));
 
 		/// <inheritdoc/>
-		public IExistsResponse IndexTemplateExists(IIndexTemplateExistsRequest request) => 
+		public IExistsResponse IndexTemplateExists(IIndexTemplateExistsRequest templateRequest) => 
 			this.Dispatcher.Dispatch<IIndexTemplateExistsRequest, IndexTemplateExistsRequestParameters, ExistsResponse>(
-				request,
+				templateRequest,
 				new IndexTemplateExistConverter(DeserializeExistsResponse),
 				(p, d) => this.LowLevelDispatch.IndicesExistsTemplateDispatch<ExistsResponse>(p)
 			);
@@ -44,10 +44,10 @@ namespace Nest
 			this.IndexTemplateExistsAsync(selector.InvokeOrDefault(new IndexTemplateExistsDescriptor(template)));
 
 		/// <inheritdoc/>
-		public Task<IExistsResponse> IndexTemplateExistsAsync(IIndexTemplateExistsRequest request)
+		public Task<IExistsResponse> IndexTemplateExistsAsync(IIndexTemplateExistsRequest templateRequest)
 		{
 			return this.Dispatcher.DispatchAsync<IIndexTemplateExistsRequest, IndexTemplateExistsRequestParameters, ExistsResponse, IExistsResponse>(
-				request,
+				templateRequest,
 				new IndexTemplateExistConverter(DeserializeExistsResponse),
 				(p, d) => this.LowLevelDispatch.IndicesExistsTemplateDispatchAsync<ExistsResponse>(p)
 			);

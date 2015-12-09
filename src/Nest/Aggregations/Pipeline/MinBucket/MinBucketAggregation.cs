@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	[ContractJsonConverter(typeof(AggregationJsonConverter<MinBucketAggregation>))]
+	[JsonConverter(typeof(ReadAsTypeJsonConverter<MinBucketAggregation>))]
 	public interface IMinBucketAggregation : IPipelineAggregation { }
 
 	public class MinBucketAggregation

@@ -6,7 +6,6 @@ namespace Nest
 	/// <summary>
 	/// Describes an aggregation at request time when its being build
 	/// </summary>
-	[ExactContractJsonConverter(typeof(AggregationJsonConverter))]
 	public interface IAggregation
 	{
 	}

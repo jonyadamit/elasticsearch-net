@@ -16,13 +16,13 @@ namespace Nest
 		IGetSnapshotResponse GetSnapshot(Name repository, Names snapshots, Func<GetSnapshotDescriptor, IGetSnapshotRequest> selector = null);
 
 		/// <inheritdoc/>
-		IGetSnapshotResponse GetSnapshot(IGetSnapshotRequest request);
+		IGetSnapshotResponse GetSnapshot(IGetSnapshotRequest getSnapshotRequest);
 
 		/// <inheritdoc/>
 		Task<IGetSnapshotResponse> GetSnapshotAsync(Name repository, Names snapshots, Func<GetSnapshotDescriptor, IGetSnapshotRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<IGetSnapshotResponse> GetSnapshotAsync(IGetSnapshotRequest request);
+		Task<IGetSnapshotResponse> GetSnapshotAsync(IGetSnapshotRequest getSnapshotRequest);
 
 	}
 
@@ -33,9 +33,9 @@ namespace Nest
 			this.GetSnapshot(selector.InvokeOrDefault(new GetSnapshotDescriptor(repository, snapshots)));
 
 		/// <inheritdoc/>
-		public IGetSnapshotResponse GetSnapshot(IGetSnapshotRequest request) => 
+		public IGetSnapshotResponse GetSnapshot(IGetSnapshotRequest getSnapshotRequest) => 
 			this.Dispatcher.Dispatch<IGetSnapshotRequest, GetSnapshotRequestParameters, GetSnapshotResponse>(
-				request,
+				getSnapshotRequest,
 				(p, d) => this.LowLevelDispatch.SnapshotGetDispatch<GetSnapshotResponse>(p)
 			);
 
@@ -44,9 +44,9 @@ namespace Nest
 			this.GetSnapshotAsync(selector.InvokeOrDefault(new GetSnapshotDescriptor(repository, snapshots)));
 
 		/// <inheritdoc/>
-		public Task<IGetSnapshotResponse> GetSnapshotAsync(IGetSnapshotRequest request) => 
+		public Task<IGetSnapshotResponse> GetSnapshotAsync(IGetSnapshotRequest getSnapshotRequest) => 
 			this.Dispatcher.DispatchAsync<IGetSnapshotRequest, GetSnapshotRequestParameters, GetSnapshotResponse, IGetSnapshotResponse>(
-				request,
+				getSnapshotRequest,
 				(p, d) => this.LowLevelDispatch.SnapshotGetDispatchAsync<GetSnapshotResponse>(p)
 			);
 	}

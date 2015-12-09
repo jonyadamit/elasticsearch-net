@@ -18,10 +18,10 @@ namespace Nest
 
 	public class GeoShapeMultiPointQuery : FieldNameQueryBase, IGeoShapeMultiPointQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public IMultiPointGeoShape Shape { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.GeoShape = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.GeoShape = this;
 		internal static bool IsConditionless(IGeoShapeMultiPointQuery q) => q.Field.IsConditionless() || q.Shape == null || !q.Shape.Coordinates.HasAny();
 	}
 	
@@ -29,10 +29,10 @@ namespace Nest
 		: FieldNameQueryDescriptorBase<GeoShapeMultiPointQueryDescriptor<T>, IGeoShapeMultiPointQuery, T>
 		, IGeoShapeMultiPointQuery where T : class
 	{
-		protected override bool Conditionless => GeoShapeMultiPointQuery.IsConditionless(this);
+		bool IQuery.Conditionless => GeoShapeMultiPointQuery.IsConditionless(this);
 		IMultiPointGeoShape IGeoShapeMultiPointQuery.Shape { get; set; }
 
-		public GeoShapeMultiPointQueryDescriptor<T> Coordinates(IEnumerable<GeoCoordinate> coordinates) => Assign(a =>
+		public GeoShapeMultiPointQueryDescriptor<T> Coordinates(IEnumerable<IEnumerable<double>> coordinates) => Assign(a =>
 		{
 			a.Shape = a.Shape ?? new MultiPointGeoShape();
 			a.Shape.Coordinates = coordinates;

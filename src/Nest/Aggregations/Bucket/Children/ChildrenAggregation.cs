@@ -3,12 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-// ReSharper disable UnusedMember.Global
 
 namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	[ContractJsonConverter(typeof(AggregationJsonConverter<ChildrenAggregation>))]
+	[JsonConverter(typeof(ReadAsTypeJsonConverter<ChildrenAggregation>))]
 	public interface IChildrenAggregation : IBucketAggregation
 	{
 		[JsonProperty("type")]

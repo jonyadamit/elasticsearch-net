@@ -15,13 +15,13 @@ namespace Nest
 		IGetIndexSettingsResponse GetIndexSettings(Func<GetIndexSettingsDescriptor, IGetIndexSettingsRequest> selector);
 
 		/// <inheritdoc/>
-		IGetIndexSettingsResponse GetIndexSettings(IGetIndexSettingsRequest request);
+		IGetIndexSettingsResponse GetIndexSettings(IGetIndexSettingsRequest getIndexSettingsRequest);
 
 		/// <inheritdoc/>
 		Task<IGetIndexSettingsResponse> GetIndexSettingsAsync(Func<GetIndexSettingsDescriptor, IGetIndexSettingsRequest> selector);
 
 		/// <inheritdoc/>
-		Task<IGetIndexSettingsResponse> GetIndexSettingsAsync(IGetIndexSettingsRequest request);
+		Task<IGetIndexSettingsResponse> GetIndexSettingsAsync(IGetIndexSettingsRequest getIndexSettingsRequest);
 	}
 
 	public partial class ElasticClient
@@ -31,9 +31,9 @@ namespace Nest
 			this.GetIndexSettings(selector?.Invoke(new GetIndexSettingsDescriptor()));
 
 		/// <inheritdoc/>
-		public IGetIndexSettingsResponse GetIndexSettings(IGetIndexSettingsRequest request) => 
+		public IGetIndexSettingsResponse GetIndexSettings(IGetIndexSettingsRequest getIndexSettingsRequest) => 
 			this.Dispatcher.Dispatch<IGetIndexSettingsRequest, GetIndexSettingsRequestParameters, GetIndexSettingsResponse>(
-				request,
+				getIndexSettingsRequest,
 				(p, d) => this.LowLevelDispatch.IndicesGetSettingsDispatch<GetIndexSettingsResponse>(p)
 			);
 
@@ -42,9 +42,9 @@ namespace Nest
 			this.GetIndexSettingsAsync(selector?.Invoke(new GetIndexSettingsDescriptor()));
 
 		/// <inheritdoc/>
-		public Task<IGetIndexSettingsResponse> GetIndexSettingsAsync(IGetIndexSettingsRequest request) => 
+		public Task<IGetIndexSettingsResponse> GetIndexSettingsAsync(IGetIndexSettingsRequest getIndexSettingsRequest) => 
 			this.Dispatcher.DispatchAsync<IGetIndexSettingsRequest, GetIndexSettingsRequestParameters, GetIndexSettingsResponse, IGetIndexSettingsResponse>(
-				request,
+				getIndexSettingsRequest,
 				(p, d) => this.LowLevelDispatch.IndicesGetSettingsDispatchAsync<GetIndexSettingsResponse>(p)
 			);
 	}

@@ -58,12 +58,5 @@ namespace Tests.QueryDsl.Joining.SpanNear
 				.InOrder(false)
 				.CollectPayloads(false)
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<ISpanNearQuery>(a => a.SpanNear)
-		{
-			q => q.Clauses = null,
-			q => q.Clauses = Enumerable.Empty<ISpanQuery>(),
-			q => q.Clauses = new [] { new SpanQuery() },
-		};
 	}
 }

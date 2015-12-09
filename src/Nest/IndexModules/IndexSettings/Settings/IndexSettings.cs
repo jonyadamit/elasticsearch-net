@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Nest
 {
-	[ContractJsonConverter(typeof(IndexSettingsConverter))]
+	[JsonConverter(typeof(IndexSettingsConverter))]
 	public interface IIndexSettings : IDynamicIndexSettings
 	{
 		/// <summary>

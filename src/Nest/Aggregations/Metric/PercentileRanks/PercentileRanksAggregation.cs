@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Nest
 {
-	[ContractJsonConverter(typeof(PercentileRanksAggregationJsonConverter))]
+	[JsonConverter(typeof(PercentileRanksAggregationJsonConverter))]
 	public interface IPercentileRanksAggregation : IMetricAggregation
 	{
 		IEnumerable<double> Values { get; set; }

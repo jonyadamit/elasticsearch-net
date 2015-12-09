@@ -7,6 +7,12 @@ namespace Nest
 {
 	internal class FieldsJsonConverter : JsonConverter
 	{
+		private readonly ElasticInferrer _infer;
+		public FieldsJsonConverter(IConnectionSettingsValues connectionSettings)
+		{
+			_infer = new ElasticInferrer(connectionSettings);
+		}
+
 		public override bool CanRead => true;
 
 		public override bool CanWrite => true;
@@ -17,10 +23,9 @@ namespace Nest
 		{
 			var fields = value as Fields;
 			writer.WriteStartArray();
-			var infer = serializer.GetConnectionSettings().Inferrer;
 			foreach (var f in fields?.ListOfFields ?? Enumerable.Empty<Field>())
 			{
-				writer.WriteValue(infer.Field(f));
+				writer.WriteValue(this._infer.Field(f));
 			}
 			writer.WriteEndArray();
 		}

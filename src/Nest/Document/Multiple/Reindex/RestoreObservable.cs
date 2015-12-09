@@ -21,8 +21,8 @@ namespace Nest
 
 		public RestoreObservable(IElasticClient elasticClient, IRestoreRequest restoreRequest)
 		{
-			elasticClient.ThrowIfNull(nameof(elasticClient));
-			restoreRequest.ThrowIfNull(nameof(restoreRequest));
+			elasticClient.ThrowIfNull("elasticClient");
+			restoreRequest.ThrowIfNull("restoreRequest");
 
 			_elasticClient = elasticClient;
 			_restoreRequest = restoreRequest;
@@ -35,15 +35,15 @@ namespace Nest
 		public RestoreObservable(IElasticClient elasticClient, IRestoreRequest restoreRequest, TimeSpan interval)
 			: this(elasticClient, restoreRequest)
 		{
-			interval.ThrowIfNull(nameof(interval));
-			if (interval.Ticks < 0) throw new ArgumentOutOfRangeException(nameof(interval));
+			interval.ThrowIfNull("interval");
+			if (interval.Ticks < 0) throw new ArgumentOutOfRangeException("interval");
 
 			_interval = interval;
 		}
 
 		public IDisposable Subscribe(IObserver<IRecoveryStatusResponse> observer)
 		{
-			observer.ThrowIfNull(nameof(observer));
+			observer.ThrowIfNull("observer");
 
 			try
 			{
@@ -79,7 +79,7 @@ namespace Nest
 		{
 			var observer = state as IObserver<IRecoveryStatusResponse>;
 
-			if (observer == null) throw new ArgumentException($"must be an {nameof(IObserver<IRecoveryStatusResponse>)}", nameof(state));
+			if (observer == null) throw new ArgumentException("state");
 
 			try
 			{
@@ -163,8 +163,8 @@ namespace Nest
 	{
 		private readonly IElasticClient _elasticClient;
 		private readonly IRestoreRequest _restoreRequest;
-		private readonly string _renamePattern;
-		private readonly string _renameReplacement;
+		private string _renamePattern;
+		private string _renameReplacement;
 
 		public event EventHandler<RestoreCompletedEventArgs> Completed;
 		public event EventHandler<RestoreErrorEventArgs> Error;
@@ -172,8 +172,8 @@ namespace Nest
 
 		public RestoreStatusHumbleObject(IElasticClient elasticClient, IRestoreRequest restoreRequest)
 		{
-			elasticClient.ThrowIfNull(nameof(elasticClient));
-			restoreRequest.ThrowIfNull(nameof(restoreRequest));
+			elasticClient.ThrowIfNull("elasticClient");
+			restoreRequest.ThrowIfNull("restoreRequest");
 
 			_elasticClient = elasticClient;
 			_restoreRequest = restoreRequest;

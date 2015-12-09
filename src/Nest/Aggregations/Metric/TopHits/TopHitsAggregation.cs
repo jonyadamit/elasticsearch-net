@@ -8,7 +8,7 @@ using System.Text;
 namespace Nest
 {
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	[ContractJsonConverter(typeof(AggregationJsonConverter<TopHitsAggregation>))]
+	[JsonConverter(typeof(ReadAsTypeJsonConverter<TopHitsAggregation>))]
 	public interface ITopHitsAggregation : IMetricAggregation
 	{
 		[JsonProperty("from")]
@@ -18,6 +18,7 @@ namespace Nest
 		int? Size { get; set; }
 
 		[JsonProperty("sort")]
+		[JsonConverter(typeof(SortCollectionJsonConverter))]
 		IList<ISort> Sort { get; set; }
 
 		[JsonProperty("_source")]

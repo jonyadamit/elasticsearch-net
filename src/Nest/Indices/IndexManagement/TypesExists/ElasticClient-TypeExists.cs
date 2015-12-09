@@ -13,13 +13,13 @@ namespace Nest
 		IExistsResponse TypeExists(Indices indices, Types types, Func<TypeExistsDescriptor, ITypeExistsRequest> selector = null);
 
 		/// <inheritdoc/>
-		IExistsResponse TypeExists(ITypeExistsRequest request);
+		IExistsResponse TypeExists(ITypeExistsRequest typeRequest);
 
 		/// <inheritdoc/>
 		Task<IExistsResponse> TypeExistsAsync(Indices indices, Types types, Func<TypeExistsDescriptor, ITypeExistsRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<IExistsResponse> TypeExistsAsync(ITypeExistsRequest request);
+		Task<IExistsResponse> TypeExistsAsync(ITypeExistsRequest typeRequest);
 
 	}
 
@@ -30,9 +30,9 @@ namespace Nest
 			this.TypeExists(selector.InvokeOrDefault(new TypeExistsDescriptor(indices, types)));
 
 		/// <inheritdoc/>
-		public IExistsResponse TypeExists(ITypeExistsRequest request) => 
+		public IExistsResponse TypeExists(ITypeExistsRequest typeRequest) => 
 			this.Dispatcher.Dispatch<ITypeExistsRequest, TypeExistsRequestParameters, ExistsResponse>(
-				request,
+				typeRequest,
 				new TypeExistConverter(DeserializeExistsResponse),
 				(p, d) => this.LowLevelDispatch.IndicesExistsTypeDispatch<ExistsResponse>(p)
 			);
@@ -42,9 +42,9 @@ namespace Nest
 			this.TypeExistsAsync(selector.InvokeOrDefault(new TypeExistsDescriptor(indices, types)));
 
 		/// <inheritdoc/>
-		public Task<IExistsResponse> TypeExistsAsync(ITypeExistsRequest request) => 
+		public Task<IExistsResponse> TypeExistsAsync(ITypeExistsRequest typeRequest) => 
 			this.Dispatcher.DispatchAsync<ITypeExistsRequest, TypeExistsRequestParameters, ExistsResponse, IExistsResponse>(
-				request,
+				typeRequest,
 				new TypeExistConverter(DeserializeExistsResponse),
 				(p, d) => this.LowLevelDispatch.IndicesExistsTypeDispatchAsync<ExistsResponse>(p)
 			);

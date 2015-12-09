@@ -22,22 +22,22 @@ namespace Nest
 
 	public class GeoHashCellQuery : FieldNameQueryBase, IGeoHashCellQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 
 		public GeoLocation Location { get; set; }
 		public GeoDistance Precision { get; set; }
 		public bool? Neighbors { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.GeoHashCell = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.GeoHashCell = this;
 
-		internal static bool IsConditionless(IGeoHashCellQuery q) => q.Location == null || q.Field == null;
+		internal static bool IsConditionless(IGeoHashCellQuery q) => q.Location == null;
 	}
 
 	public class GeoHashCellQueryDescriptor<T>
 		: FieldNameQueryDescriptorBase<GeoHashCellQueryDescriptor<T>, IGeoHashCellQuery, T>
 		, IGeoHashCellQuery where T : class
 	{
-		protected override bool Conditionless => GeoHashCellQuery.IsConditionless(this);
+		bool IQuery.Conditionless => GeoHashCellQuery.IsConditionless(this);
 
 		GeoLocation IGeoHashCellQuery.Location { get; set; }
 		GeoDistance IGeoHashCellQuery.Precision { get; set; }

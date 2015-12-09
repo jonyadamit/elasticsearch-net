@@ -24,11 +24,10 @@ namespace Nest
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
+			var contract = serializer.ContractResolver as SettingsContractResolver;
 
 			var dictionary = value as IDictionary;
 			if (dictionary == null) return;
-
-			var settings = serializer.GetConnectionSettings();
 
 			writer.WriteStartObject();
 			foreach (DictionaryEntry entry in dictionary)
@@ -40,16 +39,16 @@ namespace Nest
 				var propertyName = entry.Key as PropertyName;
 				var indexName = entry.Key as IndexName;
 				var typeName = entry.Key as TypeName;
-				if (settings == null)
+				if (contract == null)
 					key = Convert.ToString(entry.Key, CultureInfo.InvariantCulture);
 				else if (fieldName != null)
-					key = settings.Inferrer.Field(fieldName);
+					key = contract.Infer.Field(fieldName);
 				else if (propertyName != null)
-					key = settings.Inferrer.PropertyName(propertyName);
+					key = contract.Infer.PropertyName(propertyName);
 				else if (indexName != null)
-					key = settings.Inferrer.IndexName(indexName);
+					key = contract.Infer.IndexName(indexName);
 				else if (typeName != null)
-					key = settings.Inferrer.TypeName(typeName);
+					key = contract.Infer.TypeName(typeName);
 				else
 					key = Convert.ToString(entry.Key, CultureInfo.InvariantCulture);
 				writer.WritePropertyName(key);

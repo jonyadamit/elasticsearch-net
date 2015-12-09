@@ -8,18 +8,18 @@ namespace Nest
 	public partial interface IElasticClient
 	{
 		/// <inheritdoc/>
-		IPercolateCountResponse PercolateCount<T>(Func<PercolateCountDescriptor<T>, IPercolateCountRequest<T>> selector)
+		IPercolateCountResponse PercolateCount<T>(Func<PercolateCountDescriptor<T>, IPercolateCountRequest<T>> percolateSelector)
 			where T : class;
 
 		/// <inheritdoc/>
-		IPercolateCountResponse PercolateCount<T>(IPercolateCountRequest<T> request)
+		IPercolateCountResponse PercolateCount<T>(IPercolateCountRequest<T> percolateCountRequest)
 			where T : class;
 
-		Task<IPercolateCountResponse> PercolateCountAsync<T>(Func<PercolateCountDescriptor<T>, IPercolateCountRequest<T>> selector = null)
+		Task<IPercolateCountResponse> PercolateCountAsync<T>(Func<PercolateCountDescriptor<T>, IPercolateCountRequest<T>> percolateSelector = null)
 			where T : class;
 
 		/// <inheritdoc/>
-		Task<IPercolateCountResponse> PercolateCountAsync<T>(IPercolateCountRequest<T> request)
+		Task<IPercolateCountResponse> PercolateCountAsync<T>(IPercolateCountRequest<T> percolateCountRequest)
 			where T : class;
 	}
 
@@ -27,28 +27,28 @@ namespace Nest
 	{
 
 		/// <inheritdoc/>
-		public IPercolateCountResponse PercolateCount<T>(Func<PercolateCountDescriptor<T>, IPercolateCountRequest<T>> selector)
+		public IPercolateCountResponse PercolateCount<T>(Func<PercolateCountDescriptor<T>, IPercolateCountRequest<T>> percolateSelector)
 			where T : class =>
-			this.PercolateCount<T>(selector?.Invoke(new PercolateCountDescriptor<T>(typeof(T), typeof(T))));
+			this.PercolateCount<T>(percolateSelector?.Invoke(new PercolateCountDescriptor<T>(typeof(T), typeof(T))));
 
 		/// <inheritdoc/>
-		public IPercolateCountResponse PercolateCount<T>(IPercolateCountRequest<T> request)
+		public IPercolateCountResponse PercolateCount<T>(IPercolateCountRequest<T> percolateCountRequest)
 			where T : class => 
 			this.Dispatcher.Dispatch<IPercolateCountRequest<T>, PercolateCountRequestParameters, PercolateCountResponse>(
-				request,
+				percolateCountRequest,
 				this.LowLevelDispatch.CountPercolateDispatch<PercolateCountResponse>
 			);
 
 		/// <inheritdoc/>
-		public Task<IPercolateCountResponse> PercolateCountAsync<T>(Func<PercolateCountDescriptor<T>, IPercolateCountRequest<T>> selector)
+		public Task<IPercolateCountResponse> PercolateCountAsync<T>(Func<PercolateCountDescriptor<T>, IPercolateCountRequest<T>> percolateSelector)
 			where T : class => 
-			this.PercolateCountAsync<T>(selector?.Invoke(new PercolateCountDescriptor<T>(typeof(T), typeof(T))));
+			this.PercolateCountAsync<T>(percolateSelector?.Invoke(new PercolateCountDescriptor<T>(typeof(T), typeof(T))));
 
 		/// <inheritdoc/>
-		public Task<IPercolateCountResponse> PercolateCountAsync<T>(IPercolateCountRequest<T> request)
+		public Task<IPercolateCountResponse> PercolateCountAsync<T>(IPercolateCountRequest<T> percolateCountRequest)
 			where T : class => 
 			this.Dispatcher.DispatchAsync<IPercolateCountRequest<T>, PercolateCountRequestParameters, PercolateCountResponse, IPercolateCountResponse>(
-				request,
+				percolateCountRequest,
 				this.LowLevelDispatch.CountPercolateDispatchAsync<PercolateCountResponse>
 			);
 	}

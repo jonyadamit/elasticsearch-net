@@ -14,6 +14,9 @@ namespace Nest
 		[JsonProperty("score_mode")]
 		NestedScoreMode? ScoreMode { get; set; }
 
+		[JsonProperty("filter")]
+		QueryContainer Filter { get; set; }
+
 		[JsonProperty("query")]
 		QueryContainer Query { get; set; }
 
@@ -27,14 +30,19 @@ namespace Nest
 
 	public class NestedQuery : QueryBase, INestedQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public NestedScoreMode? ScoreMode { get; set; }
+		public QueryContainer Filter { get; set; }
 		public QueryContainer Query { get; set; }
 		public Field Path { get; set; }
 		public IInnerHits InnerHits { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.Nested = this;
-		internal static bool IsConditionless(INestedQuery q) => q.Path == null || q.Query.IsConditionless();
+		protected override void WrapInContainer(IQueryContainer c) => c.Nested = this;
+		internal static bool IsConditionless(INestedQuery q)
+		{
+			return (q.Query == null || q.Query.IsConditionless)
+				&& (q.Filter == null || q.Filter.IsConditionless);
+		}
 	}
 
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
@@ -42,14 +50,18 @@ namespace Nest
 		: QueryDescriptorBase<NestedQueryDescriptor<T>, INestedQuery>
 		, INestedQuery where T : class
 	{
-		protected override bool Conditionless => NestedQuery.IsConditionless(this);
+		bool IQuery.Conditionless => NestedQuery.IsConditionless(this);
 		NestedScoreMode? INestedQuery.ScoreMode { get; set; }
+		QueryContainer INestedQuery.Filter { get; set; }
 		QueryContainer INestedQuery.Query { get; set; }
 		Field INestedQuery.Path { get; set; }
 		IInnerHits INestedQuery.InnerHits { get; set; }
 
+		public NestedQueryDescriptor<T> Filter(Func<QueryContainerDescriptor<T>, QueryContainer> selector) => 
+			Assign(a => a.Filter = selector(new QueryContainerDescriptor<T>()));
+
 		public NestedQueryDescriptor<T> Query(Func<QueryContainerDescriptor<T>, QueryContainer> selector) => 
-			Assign(a => a.Query = selector?.InvokeQuery(new QueryContainerDescriptor<T>()));
+			Assign(a => a.Query = selector(new QueryContainerDescriptor<T>()));
 
 		public NestedQueryDescriptor<T> ScoreMode(NestedScoreMode scoreMode) => Assign(a => a.ScoreMode = scoreMode);
 

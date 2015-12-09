@@ -17,41 +17,41 @@ namespace Nest
 		/// <para> Difference with GetAlias is that this call will also return indices without aliases set</para>
 		/// <para> </para>http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-aliases.html#alias-retrieving
 		/// </summary>
-		/// <param name="selector">A descriptor that describes which aliases/indexes we are interested int</param>
-		IGetAliasesResponse GetAlias(Func<GetAliasDescriptor, IGetAliasRequest> selector = null);
+		/// <param name="getAliasDescriptor">A descriptor that describes which aliases/indexes we are interested int</param>
+		IGetAliasesResponse GetAlias(Func<GetAliasDescriptor, IGetAliasRequest> getAliasDescriptor = null);
 
 		/// <inheritdoc/>
-		IGetAliasesResponse GetAlias(IGetAliasRequest request);
+		IGetAliasesResponse GetAlias(IGetAliasRequest getAliasRequest);
 
 		/// <inheritdoc/>
-		Task<IGetAliasesResponse> GetAliasAsync(Func<GetAliasDescriptor, IGetAliasRequest> selector = null);
+		Task<IGetAliasesResponse> GetAliasAsync(Func<GetAliasDescriptor, IGetAliasRequest> getAliasDescriptor = null);
 
 		/// <inheritdoc/>
-		Task<IGetAliasesResponse> GetAliasAsync(IGetAliasRequest request);
+		Task<IGetAliasesResponse> GetAliasAsync(IGetAliasRequest getAliasRequest);
 	}
 
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IGetAliasesResponse GetAlias(Func<GetAliasDescriptor, IGetAliasRequest> selector = null) =>
-			this.GetAlias(selector.InvokeOrDefault(new GetAliasDescriptor()));
+		public IGetAliasesResponse GetAlias(Func<GetAliasDescriptor, IGetAliasRequest> getAliasDescriptor = null) =>
+			this.GetAlias(getAliasDescriptor.InvokeOrDefault(new GetAliasDescriptor()));
 
 		/// <inheritdoc/>
-		public IGetAliasesResponse GetAlias(IGetAliasRequest request) => 
+		public IGetAliasesResponse GetAlias(IGetAliasRequest getAliasRequest) => 
 			this.Dispatcher.Dispatch<IGetAliasRequest, GetAliasRequestParameters, GetAliasesResponse>(
-				request,
+				getAliasRequest,
 				new GetAliasesConverter(DeserializeGetAliasesResponse),
 				(p, d) => this.LowLevelDispatch.IndicesGetAliasDispatch<GetAliasesResponse>(p)
 			);
 
 		/// <inheritdoc/>
-		public Task<IGetAliasesResponse> GetAliasAsync(Func<GetAliasDescriptor, IGetAliasRequest> selector = null) =>
-			this.GetAliasAsync(selector.InvokeOrDefault(new GetAliasDescriptor()));
+		public Task<IGetAliasesResponse> GetAliasAsync(Func<GetAliasDescriptor, IGetAliasRequest> getAliasDescriptor = null) =>
+			this.GetAliasAsync(getAliasDescriptor.InvokeOrDefault(new GetAliasDescriptor()));
 
 		/// <inheritdoc/>
-		public Task<IGetAliasesResponse> GetAliasAsync(IGetAliasRequest request) => 
+		public Task<IGetAliasesResponse> GetAliasAsync(IGetAliasRequest getAliasRequest) => 
 			this.Dispatcher.DispatchAsync<IGetAliasRequest, GetAliasRequestParameters, GetAliasesResponse, IGetAliasesResponse>(
-				request,
+				getAliasRequest,
 				new GetAliasesConverter(DeserializeGetAliasesResponse),
 				(p, d) => this.LowLevelDispatch.IndicesGetAliasDispatchAsync<GetAliasesResponse>(p)
 			);

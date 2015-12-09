@@ -14,11 +14,11 @@ namespace Nest
 
 	public class PrefixQuery : FieldNameQueryBase, IPrefixQuery
 	{
-		protected override bool Conditionless => TermQuery.IsConditionless(this);
+		bool IQuery.Conditionless => TermQuery.IsConditionless(this);
 		public object Value { get; set; }
 		public RewriteMultiTerm? Rewrite { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.Prefix = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.Prefix = this;
 	}
 
 	public class PrefixQueryDescriptor<T> : TermQueryDescriptorBase<PrefixQueryDescriptor<T>, T>, 

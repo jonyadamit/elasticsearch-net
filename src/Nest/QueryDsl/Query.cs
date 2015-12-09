@@ -89,11 +89,8 @@ namespace Nest
 		public static QueryContainer QueryString(Func<QueryStringQueryDescriptor<T>, IQueryStringQuery> selector) => 
 			new QueryContainerDescriptor<T>().QueryString(selector);
 
-		public static QueryContainer Range(Func<NumericRangeQueryDescriptor<T>, INumericRangeQuery> selector) => 
+		public static QueryContainer Range(Func<RangeQueryDescriptor<T>, IRangeQuery> selector) => 
 			new QueryContainerDescriptor<T>().Range(selector);
-
-		public static QueryContainer DateRange(Func<DateRangeQueryDescriptor<T>, IDateRangeQuery> selector) => 
-			new QueryContainerDescriptor<T>().DateRange(selector);
 
 		public static QueryContainer SpanFirst(Func<SpanFirstQueryDescriptor<T>, ISpanFirstQuery> selector) => 
 			new QueryContainerDescriptor<T>().SpanFirst(selector);
@@ -121,6 +118,9 @@ namespace Nest
 
 		public static QueryContainer Term<K>(string field, K value, double? Boost = null) => 
 			new QueryContainerDescriptor<T>().Term(field, value, Boost);
+
+		public static QueryContainer Terms(string field, params string[] terms) => 
+			new QueryContainerDescriptor<T>().Terms(field, terms);
 
 		public static QueryContainer TermsDescriptor(Func<TermsQueryDescriptor<T, object>, ITermsQuery> selector) => 
 			new QueryContainerDescriptor<T>().Terms(selector);

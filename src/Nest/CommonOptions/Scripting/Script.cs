@@ -17,7 +17,6 @@ namespace Nest
 
 		[JsonProperty("lang")]
 		string Lang { get; set; }
-
 	}
 
 	public abstract class Script : IScript
@@ -29,12 +28,15 @@ namespace Nest
 		public static implicit operator Script(string inline) => new InlineScript(inline);
 	}
 
-	public class ScriptDescriptorBase<TDescriptor, TInterface> : DescriptorBase<TDescriptor, TInterface>, IScript
+	public class ScriptDescriptorBase<TDescriptor, TInterface> : IScript
 		where TDescriptor : ScriptDescriptorBase<TDescriptor, TInterface>, TInterface, IScript
 		where TInterface : class, IScript
 	{
 		Dictionary<string, object> IScript.Params { get; set; }
 		string IScript.Lang { get; set; }
+
+		protected TDescriptor Assign(Action<TInterface> assigner) =>
+			Fluent.Assign(((TDescriptor)this), assigner);
 
 		public TDescriptor Params(Dictionary<string, object> scriptParams) => Assign(a => a.Params = scriptParams);
 
@@ -44,7 +46,7 @@ namespace Nest
 		public TDescriptor Lang(string lang) => Assign(a => a.Lang = lang);
 	}
 
-	public class ScriptDescriptor : DescriptorBase<ScriptDescriptor, IDescriptor>
+	public class ScriptDescriptor
 	{
 		public IFileScript File(string file, Func<FileScriptDescriptor, IFileScript> fileScript = null) =>
 			fileScript.InvokeOrDefault(new FileScriptDescriptor().File(file));

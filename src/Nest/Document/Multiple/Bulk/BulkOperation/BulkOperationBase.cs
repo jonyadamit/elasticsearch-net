@@ -25,13 +25,15 @@ namespace Nest
 		}
 	}
 
-	public abstract class BulkOperationDescriptorBase : DescriptorBase<BulkOperationDescriptorBase, IBulkOperation>, IBulkOperation
+	public abstract class BulkOperationDescriptorBase : IBulkOperation
 	{
+		private IBulkOperation Self => this;
+
 		protected abstract string BulkOperationType { get; }
-		string IBulkOperation.Operation => this.BulkOperationType;
+		string IBulkOperation.Operation { get { return this.BulkOperationType; } }
 
 		protected abstract Type BulkOperationClrType { get; }
-		Type IBulkOperation.ClrType => this.BulkOperationClrType;
+		Type IBulkOperation.ClrType { get { return this.BulkOperationClrType;  } }
 
 		IndexName IBulkOperation.Index { get; set; }
 

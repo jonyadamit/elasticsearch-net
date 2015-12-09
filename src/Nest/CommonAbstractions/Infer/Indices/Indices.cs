@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Nest
 {
-	[JsonConverter(typeof(IndicesMultiSyntaxJsonConverter))]
+	[JsonConverter(typeof(IndicesJsonConverter))]
 	public class Indices : Union<Indices.AllIndicesMarker, Indices.ManyIndices>, IUrlParameter
 	{
 		public class AllIndicesMarker { internal AllIndicesMarker() { } }

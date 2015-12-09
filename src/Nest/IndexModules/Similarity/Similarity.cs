@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace Nest
 {
-	[ContractJsonConverter(typeof(SimilarityJsonConverter))]
 	public interface ISimilarity
 	{
 		[JsonProperty("type")]

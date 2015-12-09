@@ -75,12 +75,5 @@ namespace Tests.QueryDsl.FullText.Match
 				.Slop(2)
 				.Name("named_query")
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<IMatchQuery>(a => a.Match)
-		{
-			q => q.Query = null,
-			q => q.Query = string.Empty,
-			q => q.Field = null
-		};
 	}
 }

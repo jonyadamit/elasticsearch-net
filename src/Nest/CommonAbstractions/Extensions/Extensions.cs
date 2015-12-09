@@ -23,24 +23,6 @@ namespace Nest
 		internal static TReturn InvokeOrDefault<T1, T2, TReturn>(this Func<T1, T2, TReturn> func, T1 @default, T2 param2)
 			where T1: class, TReturn where TReturn: class =>
 			func?.Invoke(@default, param2) ?? @default;
-		
-		internal static QueryContainer InvokeQuery<T>(
-			this Func<QueryContainerDescriptor<T>, QueryContainer> f,
-			QueryContainerDescriptor<T> container)
-			where T : class
-		{
-			var c = f.Invoke(container);
-			//if query is not conditionless or is verbatim: return a container that holds the query
-			if (c != null && (!c.IsConditionless || c.IsVerbatim))
-				return c;
-
-			//query is conditionless but the container is marked as strict, throw exception
-			if (c != null && c.IsStrict)
-				throw new DslException("Query is conditionless but strict is turned on") { Offender = c };
-
-			//query is conditionless return an empty container that can later be rewritten
-			return QueryContainer.CreateEmptyContainer(c);
-		}
 
 		internal static string GetStringValue(this Enum enumValue)
 		{
@@ -154,12 +136,12 @@ namespace Nest
 		internal static string F(this string format, params object[] args)
 		{
 			var c = CultureInfo.InvariantCulture;
-			format.ThrowIfNull(nameof(format));
+			format.ThrowIfNull("format");
 			return string.Format(c, format, args);
 		}
 		internal static string EscapedFormat(this string format, params object[] args)
 		{
-			format.ThrowIfNull(nameof(format));
+			format.ThrowIfNull("format");
 			var arguments = new List<object>();
 			foreach (var a in args)
 			{
@@ -170,7 +152,7 @@ namespace Nest
 		}
 		internal static bool IsNullOrEmpty(this string value)
 		{
-			return string.IsNullOrWhiteSpace(value);
+			return string.IsNullOrEmpty(value);
 		}
 
 

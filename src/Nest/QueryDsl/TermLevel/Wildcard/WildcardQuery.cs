@@ -25,11 +25,11 @@ namespace Nest
 
 	public class WildcardQuery : FieldNameQueryBase, IWildcardQuery
 	{
-		protected override bool Conditionless => TermQuery.IsConditionless(this);
+		bool IQuery.Conditionless => TermQuery.IsConditionless(this);
 		public object Value { get; set; }
 		public RewriteMultiTerm? Rewrite { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.Wildcard = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.Wildcard = this;
 	}
 
 	public class WildcardQueryDescriptor<T> : 

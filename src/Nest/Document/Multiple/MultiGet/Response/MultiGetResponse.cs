@@ -22,8 +22,6 @@ namespace Nest
 	}
 
 	[JsonObject]
-	//TODO validate this, ported over from ElasticContractResolver but it seems out of place
-	[ContractJsonConverter(typeof(MultiGetHitJsonConverter))]
 	public class MultiGetResponse : BaseResponse, IMultiGetResponse
 	{
 		public MultiGetResponse()

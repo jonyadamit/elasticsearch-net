@@ -4,7 +4,7 @@ namespace Nest
 {
 
 	[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-	[ContractJsonConverter(typeof(AggregationJsonConverter<GlobalAggregation>))]
+	[JsonConverter(typeof(ReadAsTypeJsonConverter<GlobalAggregation>))]
 	public interface IGlobalAggregation : IBucketAggregation { }
 
 	public class GlobalAggregation : BucketAggregationBase, IGlobalAggregation

@@ -18,10 +18,10 @@ namespace Nest
 
 	public class GeoShapeMultiPolygonQuery : FieldNameQueryBase, IGeoShapeMultiPolygonQuery
 	{
-		protected override bool Conditionless => IsConditionless(this);
+		bool IQuery.Conditionless => IsConditionless(this);
 		public IMultiPolygonGeoShape Shape { get; set; }
 
-		internal override void WrapInContainer(IQueryContainer c) => c.GeoShape = this;
+		protected override void WrapInContainer(IQueryContainer c) => c.GeoShape = this;
 		internal static bool IsConditionless(IGeoShapeMultiPolygonQuery q) => q.Field.IsConditionless() || q.Shape == null || !q.Shape.Coordinates.HasAny();
 	}
 
@@ -29,10 +29,10 @@ namespace Nest
 		: FieldNameQueryDescriptorBase<GeoShapeMultiPolygonQueryDescriptor<T>, IGeoShapeMultiPolygonQuery, T>
 		, IGeoShapeMultiPolygonQuery where T : class
 	{
-		protected override bool Conditionless => GeoShapeMultiPolygonQuery.IsConditionless(this);
+		bool IQuery.Conditionless => GeoShapeMultiPolygonQuery.IsConditionless(this);
 		IMultiPolygonGeoShape IGeoShapeMultiPolygonQuery.Shape { get; set; }
 
-		public GeoShapeMultiPolygonQueryDescriptor<T> Coordinates(IEnumerable<IEnumerable<IEnumerable<GeoCoordinate>>> coordinates) =>
+		public GeoShapeMultiPolygonQueryDescriptor<T> Coordinates(IEnumerable<IEnumerable<IEnumerable<IEnumerable<double>>>> coordinates) =>
 			Assign(a => a.Shape = new MultiPolygonGeoShape { Coordinates = coordinates });
 	}
 }

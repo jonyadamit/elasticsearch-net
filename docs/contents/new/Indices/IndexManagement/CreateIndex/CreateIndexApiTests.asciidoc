@@ -1,5 +1,9 @@
 [source, csharp]
 ----
+client.DeleteIndex(IndexName);
+----
+[source, csharp]
+----
 d => d
 .Settings(s => s
 	.NumberOfReplicas(1)
@@ -8,7 +12,7 @@ d => d
 ----
 [source, csharp]
 ----
-new CreateIndexRequest(CallIsolatedValue)
+new CreateIndexRequest(IndexName)
 		{
 Settings = new Nest.IndexSettings()
 {

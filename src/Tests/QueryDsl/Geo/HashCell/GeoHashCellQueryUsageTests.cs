@@ -46,11 +46,5 @@ namespace Tests.QueryDsl.Geo.HashCell
 				.Neighbors()
 				.Precision(GeoDistance.Meters(3))
 			);
-
-		protected override ConditionlessWhen ConditionlessWhen => new ConditionlessWhen<IGeoHashCellQuery>(a => a.GeoHashCell)
-		{
-			q =>  q.Field = null,
-			q =>  q.Location = null
-		};
 	}
 }

@@ -15,13 +15,13 @@ namespace Nest
 		IRecoveryStatusResponse RecoveryStatus(Indices infices, Func<RecoveryStatusDescriptor, IRecoveryStatusRequest> selector = null);
 
 		/// <inheritdoc/>
-		IRecoveryStatusResponse RecoveryStatus(IRecoveryStatusRequest request);
+		IRecoveryStatusResponse RecoveryStatus(IRecoveryStatusRequest statusRequest);
 
 		/// <inheritdoc/>
 		Task<IRecoveryStatusResponse> RecoveryStatusAsync(Indices indices, Func<RecoveryStatusDescriptor, IRecoveryStatusRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<IRecoveryStatusResponse> RecoveryStatusAsync(IRecoveryStatusRequest request);
+		Task<IRecoveryStatusResponse> RecoveryStatusAsync(IRecoveryStatusRequest statusRequest);
 	}
 
 	public partial class ElasticClient
@@ -31,9 +31,9 @@ namespace Nest
 			this.RecoveryStatus(selector.InvokeOrDefault(new RecoveryStatusDescriptor().Index(indices)));
 
 		/// <inheritdoc/>
-		public IRecoveryStatusResponse RecoveryStatus(IRecoveryStatusRequest request) => 
+		public IRecoveryStatusResponse RecoveryStatus(IRecoveryStatusRequest statusRequest) => 
 			this.Dispatcher.Dispatch<IRecoveryStatusRequest, RecoveryStatusRequestParameters, RecoveryStatusResponse>(
-				request,
+				statusRequest,
 				new RecoveryStatusConverter(DeserializeRecoveryStatusResponse),
 				(p, d) => this.LowLevelDispatch.IndicesRecoveryDispatch<RecoveryStatusResponse>(p)
 			);
@@ -43,9 +43,9 @@ namespace Nest
 			this.RecoveryStatusAsync(selector.InvokeOrDefault(new RecoveryStatusDescriptor().Index(indices)));
 
 		/// <inheritdoc/>
-		public Task<IRecoveryStatusResponse> RecoveryStatusAsync(IRecoveryStatusRequest request) => 
+		public Task<IRecoveryStatusResponse> RecoveryStatusAsync(IRecoveryStatusRequest statusRequest) => 
 			this.Dispatcher.DispatchAsync<IRecoveryStatusRequest, RecoveryStatusRequestParameters, RecoveryStatusResponse, IRecoveryStatusResponse>(
-				request,
+				statusRequest,
 				new RecoveryStatusConverter(DeserializeRecoveryStatusResponse),
 				(p, d) => this.LowLevelDispatch.IndicesRecoveryDispatchAsync<RecoveryStatusResponse>(p)
 			);

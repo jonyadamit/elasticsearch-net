@@ -27,10 +27,13 @@ namespace Nest
 			if (fieldName == null)
 				return;
 
-			var settings = serializer.GetConnectionSettings();
+			var contract = serializer.ContractResolver as SettingsContractResolver;
+			if (contract == null)
+				return;
 
-			var field = settings?.Inferrer.Field(fieldName);
-			if (field.IsNullOrEmpty()) return;
+			var field = contract.Infer.Field(fieldName);
+			if (field.IsNullOrEmpty())
+				return;
 
 			writer.WriteStartObject();
 			{

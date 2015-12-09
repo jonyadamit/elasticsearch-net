@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 //TODO needs IFDEF?
 
@@ -27,16 +28,23 @@ namespace System
 {
 	public class FormattableString
 	{
-		private readonly string _messageFormat;
-		private readonly object[] _args;
+		private readonly string messageFormat;
+		private readonly object[] args;
 
 		public FormattableString(string messageFormat, object[] args)
 		{
-			this._messageFormat = messageFormat;
-			this._args = args;
+			this.messageFormat = messageFormat;
+			this.args = args;
 		}
-		public override string ToString() => string.Format(_messageFormat, _args);
+		public override string ToString()
+		{
+			return string.Format(messageFormat, args);
+		}
 
-		public string ToString(IFormatProvider formatProvider) => string.Format(formatProvider, _messageFormat, _args);
+		public string ToString(IFormatProvider formatProvider)
+		{
+			return string.Format(formatProvider, messageFormat, args);
+		}
+
 	}
 }

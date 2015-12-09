@@ -21,13 +21,13 @@ namespace Nest
 		INodesStatsResponse NodesStats(Func<NodesStatsDescriptor, INodesStatsRequest> selector = null);
 
 		/// <inheritdoc/>
-		INodesStatsResponse NodesStats(INodesStatsRequest request);
+		INodesStatsResponse NodesStats(INodesStatsRequest nodesStatsRequest);
 
 		/// <inheritdoc/>
 		Task<INodesStatsResponse> NodesStatsAsync(Func<NodesStatsDescriptor, INodesStatsRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<INodesStatsResponse> NodesStatsAsync(INodesStatsRequest request);
+		Task<INodesStatsResponse> NodesStatsAsync(INodesStatsRequest nodesStatsRequest);
 	}
 
 	public partial class ElasticClient
@@ -37,9 +37,9 @@ namespace Nest
 			this.NodesStats(selector.InvokeOrDefault(new NodesStatsDescriptor()));
 
 		/// <inheritdoc/>
-		public INodesStatsResponse NodesStats(INodesStatsRequest request) => 
+		public INodesStatsResponse NodesStats(INodesStatsRequest nodesStatsRequest) => 
 			this.Dispatcher.Dispatch<INodesStatsRequest, NodesStatsRequestParameters, NodesStatsRsponse>(
-				request,
+				nodesStatsRequest,
 				(p, d) => this.LowLevelDispatch.NodesStatsDispatch<NodesStatsRsponse>(p)
 			);
 
@@ -48,9 +48,9 @@ namespace Nest
 			this.NodesStatsAsync(selector.InvokeOrDefault(new NodesStatsDescriptor()));
 
 		/// <inheritdoc/>
-		public Task<INodesStatsResponse> NodesStatsAsync(INodesStatsRequest request) => 
+		public Task<INodesStatsResponse> NodesStatsAsync(INodesStatsRequest nodesStatsRequest) => 
 			this.Dispatcher.DispatchAsync<INodesStatsRequest, NodesStatsRequestParameters, NodesStatsRsponse, INodesStatsResponse>(
-				request,
+				nodesStatsRequest,
 				(p, d) => this.LowLevelDispatch.NodesStatsDispatchAsync<NodesStatsRsponse>(p)
 			);
 	}
