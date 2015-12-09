@@ -29,26 +29,24 @@ namespace Nest
 
 	public class GeoBoundingBoxQuery : FieldNameQueryBase, IGeoBoundingBoxQuery
 	{
-		bool IQuery.Conditionless => IsConditionless(this);
+		protected override bool Conditionless => IsConditionless(this);
 		public IBoundingBox BoundingBox { get; set; }
 		public GeoExecution? Type { get; set; }
 		public bool? Coerce { get; set; }
 		public bool? IgnoreMalformed { get; set; }
 		public GeoValidationMethod? ValidationMethod { get; set; }
 
-		protected override void WrapInContainer(IQueryContainer c) => c.GeoBoundingBox = this;
+		internal override void WrapInContainer(IQueryContainer c) => c.GeoBoundingBox = this;
 
-		internal static bool IsConditionless(IGeoBoundingBoxQuery q)
-		{
-			return q.Field.IsConditionless() || q.BoundingBox == null;
-		}
+		internal static bool IsConditionless(IGeoBoundingBoxQuery q) =>
+			q.Field.IsConditionless() || q.BoundingBox?.BottomRight == null || q.BoundingBox?.TopLeft == null;
 	}
 
 	public class GeoBoundingBoxQueryDescriptor<T>
 		: FieldNameQueryDescriptorBase<GeoBoundingBoxQueryDescriptor<T>, IGeoBoundingBoxQuery, T>
 		, IGeoBoundingBoxQuery where T : class
 	{
-		bool IQuery.Conditionless => GeoBoundingBoxQuery.IsConditionless(this);
+		protected override bool Conditionless => GeoBoundingBoxQuery.IsConditionless(this);
 		IBoundingBox IGeoBoundingBoxQuery.BoundingBox { get; set; }
 		GeoExecution? IGeoBoundingBoxQuery.Type { get; set; }
 		bool? IGeoBoundingBoxQuery.Coerce { get; set; }

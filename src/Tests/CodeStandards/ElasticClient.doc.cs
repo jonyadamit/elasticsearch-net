@@ -6,41 +6,42 @@ using System.Text;
 using System.Threading.Tasks;
 using Tests.Framework;
 using FluentAssertions;
+using Xunit;
 
 namespace Tests.CodeStandards
 {
-	public class ElasticClient
+	public class ElasticClientStandards
 	{
 		/*
 		* Fluent methods on IElasticClient (Func<Descriptor, Interface>) should be named `selector`.
 		*/
-		//[U]
+		[U]
 		public void ConsistentFluentParameterNames()
 		{
-			var descriptorParameters =
-				from m in typeof(IElasticClient).GetMethods()
+			var fluentParametersNotNamedSelector =
+				from m in typeof (IElasticClient).GetMethods()
 				from p in m.GetParameters()
-				where p.ParameterType.BaseType == typeof(MulticastDelegate)
-				select p;
+				where p.ParameterType.BaseType == typeof (MulticastDelegate)
+				where !p.Name.Equals("selector")
+				select $"method '{nameof(IElasticClient)}.{m.Name}' should have parameter name of 'selector' but has a name of '{p.Name}'";
 
-			foreach (var descriptorParameter in descriptorParameters)
-				descriptorParameter.Name.Should().Be("selector");
+			fluentParametersNotNamedSelector.Should().BeEmpty();
 		}
 
 		/*
 		* Similarly, OIS methods on IElasticClient (IRequest) should be named `request`.
 		*/
-		//[U]
+		[U]
 		public void ConsistentInitializerParameterNames()
 		{
-			var requestParameters =
+			var requestParametersNotNamedRequest =
 				from m in typeof(IElasticClient).GetMethods()
 				from p in m.GetParameters()
 				where typeof(IRequest).IsAssignableFrom(p.ParameterType)
-				select p;
+				where !p.Name.Equals("request")
+				select $"method '{nameof(IElasticClient)}.{m.Name}' should have parameter name of 'request' but has a name of '{p.Name}'";
 
-			foreach(var requestParameter in requestParameters)
-				requestParameter.Name.Should().Be("request");
+			requestParametersNotNamedRequest.Should().BeEmpty();
 		}
 
 		/*

@@ -33,10 +33,8 @@ namespace Nest
 		}
 	}
 
-	public class ReindexDescriptor<T> : IReindexRequest where T : class
+	public class ReindexDescriptor<T> : DescriptorBase<ReindexDescriptor<T>, IReindexRequest>, IReindexRequest where T : class
 	{
-		ReindexDescriptor<T> Assign(Action<IReindexRequest> assign)  => Fluent.Assign(this, assign);
-
 		IndexName IReindexRequest.To { get; set; }
 		IndexName IReindexRequest.From { get; set; }
 		string IReindexRequest.Scroll { get; set; }
@@ -72,7 +70,7 @@ namespace Nest
 		/// A query to optionally limit the documents to use for the reindex operation.  
 		/// </summary>
 		public ReindexDescriptor<T> Query(Func<QueryContainerDescriptor<T>, QueryContainer> querySelector) =>
-			Assign(a => a.Query = querySelector?.Invoke(new QueryContainerDescriptor<T>()));
+			Assign(a => a.Query = querySelector?.InvokeQuery(new QueryContainerDescriptor<T>()));
 
 		/// <summary>
 		/// A query to optionally limit the documents to use for the reindex operation.  

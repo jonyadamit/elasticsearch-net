@@ -10,41 +10,41 @@ namespace Nest
 		/// Deletes a registered scroll request on the cluster 
 		/// <para> </para>http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-request-scroll.html
 		/// </summary>
-		/// <param name="clearScrollSelector">Specify the scroll id as well as request specific configuration</param>
-		IEmptyResponse ClearScroll(ScrollIds scrollIds, Func<ClearScrollDescriptor, IClearScrollRequest> clearScrollSelector = null);
+		/// <param name="selector">Specify the scroll id as well as request specific configuration</param>
+		IEmptyResponse ClearScroll(ScrollIds scrollIds, Func<ClearScrollDescriptor, IClearScrollRequest> selector = null);
 
 		/// <inheritdoc/>
-		IEmptyResponse ClearScroll(IClearScrollRequest clearScrollRequest);
+		IEmptyResponse ClearScroll(IClearScrollRequest request);
 
 		/// <inheritdoc/>
-		Task<IEmptyResponse> ClearScrollAsync(ScrollIds scrollIds, Func<ClearScrollDescriptor, IClearScrollRequest> clearScrollSelector = null);
+		Task<IEmptyResponse> ClearScrollAsync(ScrollIds scrollIds, Func<ClearScrollDescriptor, IClearScrollRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<IEmptyResponse> ClearScrollAsync(IClearScrollRequest clearScrollRequest);
+		Task<IEmptyResponse> ClearScrollAsync(IClearScrollRequest request);
 	}
 
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IEmptyResponse ClearScroll(ScrollIds scrollIds, Func<ClearScrollDescriptor, IClearScrollRequest> clearScrollSelector = null) =>
-			this.ClearScroll(clearScrollSelector.InvokeOrDefault(new ClearScrollDescriptor().ScrollId(scrollIds)));
+		public IEmptyResponse ClearScroll(ScrollIds scrollIds, Func<ClearScrollDescriptor, IClearScrollRequest> selector = null) =>
+			this.ClearScroll(selector.InvokeOrDefault(new ClearScrollDescriptor().ScrollId(scrollIds)));
 
 		/// <inheritdoc/>
-		public IEmptyResponse ClearScroll(IClearScrollRequest clearScrollRequest) => 
+		public IEmptyResponse ClearScroll(IClearScrollRequest request) => 
 			this.Dispatcher.Dispatch<IClearScrollRequest, ClearScrollRequestParameters, EmptyResponse>(
-				clearScrollRequest,
+				request,
 				(p, d) => this.LowLevelDispatch.ClearScrollDispatch<EmptyResponse>(p, PatchClearScroll(p))
 			);
 	
 
 		/// <inheritdoc/>
-		public Task<IEmptyResponse> ClearScrollAsync(ScrollIds scrollIds, Func<ClearScrollDescriptor, IClearScrollRequest> clearScrollSelector = null) => 
-			this.ClearScrollAsync(clearScrollSelector.InvokeOrDefault(new ClearScrollDescriptor().ScrollId(scrollIds)));
+		public Task<IEmptyResponse> ClearScrollAsync(ScrollIds scrollIds, Func<ClearScrollDescriptor, IClearScrollRequest> selector = null) => 
+			this.ClearScrollAsync(selector.InvokeOrDefault(new ClearScrollDescriptor().ScrollId(scrollIds)));
 
 		/// <inheritdoc/>
-		public Task<IEmptyResponse> ClearScrollAsync(IClearScrollRequest clearScrollRequest) => 
+		public Task<IEmptyResponse> ClearScrollAsync(IClearScrollRequest request) => 
 			this.Dispatcher.DispatchAsync<IClearScrollRequest, ClearScrollRequestParameters, EmptyResponse, IEmptyResponse>(
-				clearScrollRequest,
+				request,
 				(p, d) => this.LowLevelDispatch.ClearScrollDispatchAsync<EmptyResponse>(p, PatchClearScroll(p))
 			);
 

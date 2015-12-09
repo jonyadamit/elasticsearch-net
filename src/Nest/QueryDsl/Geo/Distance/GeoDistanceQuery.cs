@@ -37,7 +37,7 @@ namespace Nest
 
 	public class GeoDistanceQuery : FieldNameQueryBase, IGeoDistanceQuery
 	{
-		bool IQuery.Conditionless => IsConditionless(this);
+		protected override bool Conditionless => IsConditionless(this);
 		public GeoLocation Location { get; set; }
 		public GeoDistance Distance { get; set; }
 		public GeoOptimizeBBox? OptimizeBoundingBox { get; set; }
@@ -47,16 +47,16 @@ namespace Nest
 		public GeoValidationMethod? ValidationMethod { get; set; }
 
 
-		protected override void WrapInContainer(IQueryContainer c) => c.GeoDistance = this;
+		internal override void WrapInContainer(IQueryContainer c) => c.GeoDistance = this;
 
-		internal static bool IsConditionless(IGeoDistanceQuery q) => q.Location == null || q.Distance == null;
+		internal static bool IsConditionless(IGeoDistanceQuery q) => q.Location == null || q.Distance == null || q.Field.IsConditionless();
 	}
 
 	public class GeoDistanceQueryDescriptor<T> 
 		: FieldNameQueryDescriptorBase<GeoDistanceQueryDescriptor<T>, IGeoDistanceQuery, T> 
 		, IGeoDistanceQuery where T : class
 	{
-		bool IQuery.Conditionless => GeoDistanceQuery.IsConditionless(this);
+		protected override bool Conditionless => GeoDistanceQuery.IsConditionless(this);
 		GeoLocation IGeoDistanceQuery.Location { get; set; }
 		GeoDistance IGeoDistanceQuery.Distance { get; set; }
 		GeoDistanceType? IGeoDistanceQuery.DistanceType { get; set; }

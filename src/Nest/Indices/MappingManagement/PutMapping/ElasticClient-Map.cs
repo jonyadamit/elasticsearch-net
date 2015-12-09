@@ -14,44 +14,44 @@ namespace Nest
 		/// <para> </para>http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-put-mapping.html
 		/// </summary>
 		/// <typeparam name="T">The type we want to map in elasticsearch</typeparam>
-		/// <param name="mappingSelector">A descriptor to describe the mapping of our type</param>
-		IIndicesResponse Map<T>(Func<PutMappingDescriptor<T>, IPutMappingRequest> mappingSelector)
+		/// <param name="selector">A descriptor to describe the mapping of our type</param>
+		IIndicesResponse Map<T>(Func<PutMappingDescriptor<T>, IPutMappingRequest> selector)
 			where T : class;
 
 		/// <inheritdoc/>
-		IIndicesResponse Map(IPutMappingRequest putMappingRequest);
+		IIndicesResponse Map(IPutMappingRequest request);
 
 		/// <inheritdoc/>
-		Task<IIndicesResponse> MapAsync<T>(Func<PutMappingDescriptor<T>, IPutMappingRequest> mappingSelector)
+		Task<IIndicesResponse> MapAsync<T>(Func<PutMappingDescriptor<T>, IPutMappingRequest> selector)
 			where T : class;
 
 		/// <inheritdoc/>
-		Task<IIndicesResponse> MapAsync(IPutMappingRequest putMappingRequest);
+		Task<IIndicesResponse> MapAsync(IPutMappingRequest request);
 	}
 
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IIndicesResponse Map<T>(Func<PutMappingDescriptor<T>, IPutMappingRequest> mappingSelector)
+		public IIndicesResponse Map<T>(Func<PutMappingDescriptor<T>, IPutMappingRequest> selector)
 			where T : class => 
-			this.Map(mappingSelector?.Invoke(new PutMappingDescriptor<T>()));
+			this.Map(selector?.Invoke(new PutMappingDescriptor<T>()));
 
 		/// <inheritdoc/>
-		public IIndicesResponse Map(IPutMappingRequest putMappingRequest) => 
+		public IIndicesResponse Map(IPutMappingRequest request) => 
 			this.Dispatcher.Dispatch<IPutMappingRequest, PutMappingRequestParameters, IndicesResponse>(
-				putMappingRequest,
+				request,
 				this.LowLevelDispatch.IndicesPutMappingDispatch<IndicesResponse>
 			);
 
 		/// <inheritdoc/>
-		public Task<IIndicesResponse> MapAsync<T>(Func<PutMappingDescriptor<T>, IPutMappingRequest> mappingSelector)
+		public Task<IIndicesResponse> MapAsync<T>(Func<PutMappingDescriptor<T>, IPutMappingRequest> selector)
 			where T : class => 
-			this.MapAsync(mappingSelector?.Invoke(new PutMappingDescriptor<T>()));
+			this.MapAsync(selector?.Invoke(new PutMappingDescriptor<T>()));
 
 		/// <inheritdoc/>
-		public Task<IIndicesResponse> MapAsync(IPutMappingRequest putMappingRequest) => 
+		public Task<IIndicesResponse> MapAsync(IPutMappingRequest request) => 
 			this.Dispatcher.DispatchAsync<IPutMappingRequest, PutMappingRequestParameters, IndicesResponse, IIndicesResponse>(
-				putMappingRequest,
+				request,
 				this.LowLevelDispatch.IndicesPutMappingDispatchAsync<IndicesResponse>
 			);
 	}

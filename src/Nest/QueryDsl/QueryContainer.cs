@@ -15,7 +15,7 @@ namespace Nest
 		IBoolQuery Bool { get; set; }
 
 		[JsonIgnore]
-		bool IsConditionless { get; set; }
+		bool IsConditionless { get; }
 
 		[JsonIgnore]
 		bool IsStrict { get; set; }
@@ -44,14 +44,14 @@ namespace Nest
 		[JsonProperty(PropertyName = "ids")]
 		IIdsQuery Ids { get; set; }
 
+		[JsonProperty(PropertyName = "limit")]
+		ILimitQuery Limit { get; set; }
+
 		[JsonProperty(PropertyName = "constant_score")]
 		IConstantScoreQuery ConstantScore { get; set; }
 
 		[JsonProperty(PropertyName = "dis_max")]
 		IDisMaxQuery DisMax { get; set; }
-
-		[JsonProperty(PropertyName = "filtered")]
-		IFilteredQuery Filtered { get; set; }
 
 		[JsonProperty(PropertyName = "multi_match")]
 		IMultiMatchQuery MultiMatch { get; set; }
@@ -156,13 +156,32 @@ namespace Nest
 		[JsonProperty("type")]
 		ITypeQuery Type { get; set; }
 
+
+		[JsonProperty(PropertyName = "filtered")]
+		IFilteredQuery Filtered { get; set; }
+
+		[JsonProperty(PropertyName = "and")]
+		IAndQuery And { get; set; }
+
+		[JsonProperty(PropertyName = "or")]
+		IOrQuery Or { get; set; }
+
+		[JsonProperty(PropertyName = "not")]
+		INotQuery Not { get; set; }
+
 		void Accept(IQueryVisitor visitor);
 	}
 
-	[JsonObject(MemberSerialization.OptIn)]
-	public class QueryContainer : IQueryContainer
+	internal static class QueryContainerExtensions
 	{
-		private IQueryContainer Self => this;
+		public static bool IsConditionless(this QueryContainer q) => q == null || q.IsConditionless;
+	}
+
+
+	[JsonObject(MemberSerialization.OptIn)]
+	public class QueryContainer : IQueryContainer, IDescriptor
+	{
+		protected IQueryContainer Self => this;
 
 		IBoolQuery IQueryContainer.Bool { get; set; }
 
@@ -184,7 +203,17 @@ namespace Nest
 		
 		IDisMaxQuery IQueryContainer.DisMax { get; set; }
 		
+#pragma warning disable 618
 		IFilteredQuery IQueryContainer.Filtered { get; set; }
+
+		IAndQuery IQueryContainer.And { get; set; }
+
+		IOrQuery IQueryContainer.Or { get; set; }
+
+		INotQuery IQueryContainer.Not { get; set; }
+#pragma warning restore 618
+
+		ILimitQuery IQueryContainer.Limit { get; set; }
 
 		IMultiMatchQuery IQueryContainer.MultiMatch { get; set; }
 		
@@ -254,7 +283,9 @@ namespace Nest
 
 		ITypeQuery IQueryContainer.Type { get; set; }
 
-		bool IQueryContainer.IsConditionless { get; set; }
+		internal IQuery ContainedQuery { get; set; }
+
+		bool IQueryContainer.IsConditionless => (ContainedQuery?.Conditionless).GetValueOrDefault(true);
 		internal bool IsConditionless => Self.IsConditionless;
 
 		bool IQueryContainer.IsStrict { get; set; }
@@ -263,22 +294,19 @@ namespace Nest
 		bool IQueryContainer.IsVerbatim { get; set; }
 		internal bool IsVerbatim => Self.IsVerbatim;
 
-		public QueryContainer() {}
+		internal QueryContainer() { }
 	
-		public QueryContainer(QueryBase query)
+		public QueryContainer(QueryBase query) : this()
 		{
-			QueryBase.ToContainer(query, this);
+			this.ContainedQuery = query;
+			query?.WrapInContainer(this);
 		}
 	
-		public static QueryContainer From(QueryBase query)
-		{
-			return QueryBase.ToContainer(query);
-		}
-
 		public static QueryContainer operator &(QueryContainer leftContainer, QueryContainer rightContainer)
 		{
 			QueryContainer queryContainer;
-			if (IfEitherIsEmptyReturnTheOtherOrEmpty(leftContainer, rightContainer, out queryContainer)) return queryContainer;
+			if (IfEitherIsEmptyReturnTheOtherOrEmpty(leftContainer, rightContainer, out queryContainer))
+				return queryContainer;
 
 			return leftContainer.MergeMustQueries(rightContainer);
 		}
@@ -291,14 +319,12 @@ namespace Nest
 			return leftContainer.MergeShouldQueries(rightContainer);
 		}
 
-		private static bool IfEitherIsEmptyReturnTheOtherOrEmpty(QueryContainer leftContainer, QueryContainer rightContainer,
-			out QueryContainer queryContainer)
+		private static bool IfEitherIsEmptyReturnTheOtherOrEmpty(QueryContainer leftContainer, QueryContainer rightContainer, out QueryContainer queryContainer)
 		{
 			var combined = new[] {leftContainer, rightContainer};
-			queryContainer = !combined.Any(bf => bf == null || bf.IsConditionless)
-				? null
-				: combined.FirstOrDefault(bf => bf != null && !bf.IsConditionless) ?? CreateEmptyContainer();
-			return queryContainer != null;
+			var any = combined.Any(bf => bf == null || bf.IsConditionless);
+			queryContainer = any ? combined.FirstOrDefault(bf => bf != null && !bf.IsConditionless) : null;
+			return any;
 		}
 
 		public static QueryContainer operator !(QueryContainer queryContainer)
@@ -328,19 +354,13 @@ namespace Nest
 			walker.Walk(this, visitor);
 		}
 
-		private readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-		protected string CreateConditionlessWhenStrictExceptionMessage<TQuery>(TQuery query) where TQuery : IQuery =>
-			"Query resulted in a conditionless {0} query (json by approx):\n{1}"
-				.F(
-					query.GetType().Name.Replace("Descriptor", "").Replace("`1", ""),
-					JsonConvert.SerializeObject(this, Formatting.Indented, _jsonSettings)
-
-				);
-		protected static QueryContainer CreateEmptyContainer()
+		public static QueryContainer CreateEmptyContainer(QueryContainer c = null)
 		{
-			var q = new QueryContainer();
-			((IQueryContainer)q).IsConditionless = true;
-			return q;
+			var nc = new QueryContainer();
+			IQueryContainer ic = nc;
+			ic.IsStrict = (c?.IsStrict).GetValueOrDefault();
+			ic.IsVerbatim = (c?.IsVerbatim).GetValueOrDefault();
+			return nc;
 		}
 
 		//TODO remove rely on a custom serializer

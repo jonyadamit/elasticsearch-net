@@ -16,17 +16,17 @@ namespace Nest
 		/// <para> </para>http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-templates.html#getting
 		/// </summary>
 		/// <param name="name">The name of the template to get</param>
-		/// <param name="getTemplateSelector">An optional selector specifying additional parameters for the get template operation</param>
-		IGetIndexTemplateResponse GetIndexTemplate(Func<GetIndexTemplateDescriptor, IGetIndexTemplateRequest> getTemplateSelector = null);
+		/// <param name="selector">An optional selector specifying additional parameters for the get template operation</param>
+		IGetIndexTemplateResponse GetIndexTemplate(Func<GetIndexTemplateDescriptor, IGetIndexTemplateRequest> selector = null);
 
 		/// <inheritdoc/>
-		IGetIndexTemplateResponse GetIndexTemplate(IGetIndexTemplateRequest getTemplateRequest);
+		IGetIndexTemplateResponse GetIndexTemplate(IGetIndexTemplateRequest request);
 
 		/// <inheritdoc/>
-		Task<IGetIndexTemplateResponse> GetIndexTemplateAsync(Func<GetIndexTemplateDescriptor, IGetIndexTemplateRequest> getTemplateSelector = null);
+		Task<IGetIndexTemplateResponse> GetIndexTemplateAsync(Func<GetIndexTemplateDescriptor, IGetIndexTemplateRequest> selector = null);
 
 		/// <inheritdoc/>
-		Task<IGetIndexTemplateResponse> GetIndexTemplateAsync(IGetIndexTemplateRequest getTemplateRequest);
+		Task<IGetIndexTemplateResponse> GetIndexTemplateAsync(IGetIndexTemplateRequest request);
 
 	}
 
@@ -35,27 +35,27 @@ namespace Nest
 	public partial class ElasticClient
 	{
 		/// <inheritdoc/>
-		public IGetIndexTemplateResponse GetIndexTemplate(Func<GetIndexTemplateDescriptor, IGetIndexTemplateRequest> getTemplateSelector = null) =>
-			this.GetIndexTemplate(getTemplateSelector.InvokeOrDefault(new GetIndexTemplateDescriptor()));
+		public IGetIndexTemplateResponse GetIndexTemplate(Func<GetIndexTemplateDescriptor, IGetIndexTemplateRequest> selector = null) =>
+			this.GetIndexTemplate(selector.InvokeOrDefault(new GetIndexTemplateDescriptor()));
 		
 		/// <inheritdoc/>
-		public IGetIndexTemplateResponse GetIndexTemplate(IGetIndexTemplateRequest getTemplateRequest)
+		public IGetIndexTemplateResponse GetIndexTemplate(IGetIndexTemplateRequest request)
 		{
 			return this.Dispatcher.Dispatch<IGetIndexTemplateRequest, GetIndexTemplateRequestParameters, GetIndexTemplateResponse>(
-				getTemplateRequest,
+				request,
 				new GetIndexTemplateConverter(DeserializeGetIndexTemplateResponse),
 				(p, d) => this.LowLevelDispatch.IndicesGetTemplateDispatch<GetIndexTemplateResponse>(p)
 			);
 		}
 
 		/// <inheritdoc/>
-		public Task<IGetIndexTemplateResponse> GetIndexTemplateAsync(Func<GetIndexTemplateDescriptor, IGetIndexTemplateRequest> getTemplateSelector = null) =>
-			this.GetIndexTemplateAsync(getTemplateSelector.InvokeOrDefault(new GetIndexTemplateDescriptor()));
+		public Task<IGetIndexTemplateResponse> GetIndexTemplateAsync(Func<GetIndexTemplateDescriptor, IGetIndexTemplateRequest> selector = null) =>
+			this.GetIndexTemplateAsync(selector.InvokeOrDefault(new GetIndexTemplateDescriptor()));
 
 		/// <inheritdoc/>
-		public Task<IGetIndexTemplateResponse> GetIndexTemplateAsync(IGetIndexTemplateRequest getTemplateRequest) => 
+		public Task<IGetIndexTemplateResponse> GetIndexTemplateAsync(IGetIndexTemplateRequest request) => 
 			this.Dispatcher.DispatchAsync<IGetIndexTemplateRequest, GetIndexTemplateRequestParameters, GetIndexTemplateResponse, IGetIndexTemplateResponse>(
-				getTemplateRequest,
+				request,
 				new GetIndexTemplateConverter(DeserializeGetIndexTemplateResponse),
 				(p, d) => this.LowLevelDispatch.IndicesGetTemplateDispatchAsync<GetIndexTemplateResponse>(p)
 			);

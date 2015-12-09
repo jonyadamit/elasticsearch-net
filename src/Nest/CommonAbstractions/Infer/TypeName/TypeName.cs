@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Nest
 {
-	[JsonConverter(typeof(TypeNameJsonConverter))]
+	[ContractJsonConverter(typeof(TypeNameJsonConverter))]
 	public class TypeName : IEquatable<TypeName> , IUrlParameter
 	{
 		public string Name { get; set; }
@@ -80,7 +80,8 @@ namespace Nest
 		{
 			return !other.IsNullOrEmpty() && other == this.Name;
 		}
-		public string GetString(IConnectionConfigurationValues settings) => ((IUrlParameter)(Types)(Types.Type(this))).GetString(settings);
+
+		string IUrlParameter.GetString(IConnectionConfigurationValues settings) => ((IUrlParameter)(Types)(Types.Type(this))).GetString(settings);
 
 		public static TypeName From<T>() => typeof(T);
 

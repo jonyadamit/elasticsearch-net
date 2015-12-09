@@ -26,21 +26,21 @@ namespace Nest
 
 	public class GeoPolygonQuery : FieldNameQueryBase, IGeoPolygonQuery
 	{
-		bool IQuery.Conditionless => IsConditionless(this);
+		protected override bool Conditionless => IsConditionless(this);
 		public IEnumerable<GeoLocation> Points { get; set; }
 		public bool? Coerce { get; set; }
 		public bool? IgnoreMalformed { get; set; }
 		public GeoValidationMethod? ValidationMethod { get; set; }
 
-		protected override void WrapInContainer(IQueryContainer c) => c.GeoPolygon = this;
-		internal static bool IsConditionless(IGeoPolygonQuery q) => !q.Points.HasAny();
+		internal override void WrapInContainer(IQueryContainer c) => c.GeoPolygon = this;
+		internal static bool IsConditionless(IGeoPolygonQuery q) => q.Field == null || !q.Points.HasAny();
 	}
 
 	public class GeoPolygonQueryDescriptor<T> 
 		: FieldNameQueryDescriptorBase<GeoPolygonQueryDescriptor<T>, IGeoPolygonQuery, T>
 		, IGeoPolygonQuery where T : class
 	{
-		bool IQuery.Conditionless => GeoPolygonQuery.IsConditionless(this);
+		protected override bool Conditionless => GeoPolygonQuery.IsConditionless(this);
 		IEnumerable<GeoLocation> IGeoPolygonQuery.Points { get; set; }
 		bool? IGeoPolygonQuery.Coerce { get; set; }
 		bool? IGeoPolygonQuery.IgnoreMalformed { get; set; }

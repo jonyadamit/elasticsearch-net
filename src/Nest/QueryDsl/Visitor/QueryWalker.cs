@@ -69,7 +69,7 @@ namespace Nest.QueryDsl.Visitor
 			AcceptQuery(qd.ConstantScore, visitor, (v, d) =>
 			{
 				v.Visit(d);
-				this.Accept(v, d.Query);
+				this.Accept(v, d.Filter);
 			});
 			AcceptQuery(qd.DisMax, visitor, (v, d) =>
 			{
@@ -108,7 +108,6 @@ namespace Nest.QueryDsl.Visitor
 			{
 				v.Visit(d);
 				this.Accept(v, d.Query);
-				this.Accept(v, d.Filter);
 			});
 		}
 	}

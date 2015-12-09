@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Linq;
 
 namespace Nest
 {
@@ -17,12 +18,13 @@ namespace Nest
 		[JsonIgnore]
 		bool Conditionless { get; }
 	}
-
+	
 	public abstract class QueryBase : IQuery
 	{
 		public string Name { get; set; }
 		public double? Boost { get; set; }
-		bool IQuery.Conditionless { get; }
+		bool IQuery.Conditionless => this.Conditionless;
+		protected abstract bool Conditionless { get; }
 
 		//always evaluate to false so that each side of && equation is evaluated
 		public static bool operator false(QueryBase a) => false;
@@ -32,11 +34,18 @@ namespace Nest
 
 		public static QueryBase operator &(QueryBase leftQuery, QueryBase rightQuery)
 		{
-			var lc = new QueryContainer();
-			leftQuery.WrapInContainer(lc);
-			var rc = new QueryContainer();
-			rightQuery.WrapInContainer(rc);
-			var query = ((lc && rc) as IQueryContainer).Bool;
+			QueryBase q;
+			if (IfEitherIsEmptyReturnTheOtherOrEmpty(leftQuery, rightQuery, out q))
+				return q;
+			
+
+
+
+			var lc = new QueryContainer(leftQuery);
+			var rc = new QueryContainer(rightQuery);
+
+			IQueryContainer container = lc && rc;
+			var query = container.Bool;
 			return new BoolQuery()
 			{
 				Must = query.Must,
@@ -45,28 +54,35 @@ namespace Nest
 			};
 		}
 
-		public QueryContainer ToContainer()
+		public static QueryBase operator |(QueryBase leftQuery, QueryBase rightQuery)
 		{
-			return ToContainer(this);
+			QueryBase q;
+			if (IfEitherIsEmptyReturnTheOtherOrEmpty(leftQuery, rightQuery, out q))
+				return q;
+
+			var lc = new QueryContainer(leftQuery);
+			var rc = new QueryContainer(rightQuery);
+
+			IQueryContainer container = lc || rc;
+			var query = container.Bool;
+			return new BoolQuery()
+			{
+				Must = query.Must,
+				MustNot = query.MustNot,
+				Should = query.Should
+			};
 		}
 
-		public static QueryContainer ToContainer(QueryBase query, QueryContainer queryContainer = null)
+		private static bool IfEitherIsEmptyReturnTheOtherOrEmpty(QueryBase leftQuery, QueryBase rightQuery, out QueryBase query)
 		{
-			if (query == null) return null;
-			var c = queryContainer ?? new QueryContainer();
-			IQueryContainer fc = c;
-			query.WrapInContainer(c);
-			return c;
+			var combined = new [] {leftQuery, rightQuery};
+			var any = combined.Any(bf => bf == null || ((IQuery) bf).Conditionless); 
+			query = any ?  combined.FirstOrDefault(bf => bf != null && !((IQuery)bf).Conditionless) : null;
+			return any;
 		}
 
-		public static implicit operator QueryContainer(QueryBase query)
-		{
-			if (query == null) return null;
-			var c = new QueryContainer();
-			query.WrapInContainer(c);
-			return c;
-		}
+		public static implicit operator QueryContainer(QueryBase query) => query == null || query.Conditionless ? null : new QueryContainer(query);
 
-		protected abstract void WrapInContainer(IQueryContainer container);
+		internal abstract void WrapInContainer(IQueryContainer container);
 	}
 }

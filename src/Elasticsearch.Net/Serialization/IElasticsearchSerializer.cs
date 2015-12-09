@@ -1,9 +1,9 @@
-using Elasticsearch.Net.Connection;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Elasticsearch.Net.Extensions;
 
 namespace Elasticsearch.Net.Serialization
 {
@@ -25,6 +25,10 @@ namespace Elasticsearch.Net.Serialization
 				serializer.Serialize(data, ms, formatting);
 				return ms.ToArray();
 			}
+		}
+		public static string SerializeToString(this IElasticsearchSerializer serializer, object data, SerializationFormatting formatting = SerializationFormatting.Indented)
+		{
+			return serializer.SerializeToBytes(data, formatting).Utf8String();
 		}
 
 	}

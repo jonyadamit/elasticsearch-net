@@ -9,7 +9,8 @@ using Nest.Resolvers;
 namespace Nest
 {
 	
-	public class PropertyMappingDescriptor<TDocument>  where TDocument : class
+	public class PropertyMappingDescriptor<TDocument> : DescriptorBase<PropertyMappingDescriptor<TDocument>, IDescriptor>
+		where TDocument : class
 	{
 		internal IList<IClrTypePropertyMapping<TDocument>> Mappings { get; } = new List<IClrTypePropertyMapping<TDocument>>();
 
@@ -23,7 +24,7 @@ namespace Nest
 
 		public PropertyMappingDescriptor<TDocument> Ignore(Expression<Func<TDocument, object>> property)
 		{
-			property.ThrowIfNull("property");
+			property.ThrowIfNull(nameof(property));
 			this.Mappings.Add(new IgnorePropertyMapping<TDocument>(property));
 			return this;
 		}
